@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Data Saved{% endblock %}
+
+{% block content %}
+<h1>Data Saved Successfully</h1>
+<a href="{% url 'matching:display_data' %}">Back to Display Data</a>
+{% endblock %}

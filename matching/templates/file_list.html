@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Uploaded Directories{% endblock %}
+
+{% block content %}
+<h1>Uploaded Directories</h1>
+<ul>
+    <li><a href="{% url 'matching:select_directory' directory='claimer' %}">Claimer</a></li>
+    <li><a href="{% url 'matching:select_directory' directory='debtor' %}">Debtor</a></li>
+</ul>
+{% endblock %}

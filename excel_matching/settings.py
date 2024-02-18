@@ -1,3 +1,5 @@
+import os
+
 """
 Django settings for excel_matching project.
 
@@ -113,6 +115,11 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+#MEDIA ROOT
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+MEDIA_URL = '/uploads/'
+
 
 
 # Static files (CSS, JavaScript, Images)

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Display Data{% endblock %}
+
+{% block content %}
+<h1>Data Display</h1>
+<form method="post" action="{% url 'matching:save_selected_data' filename=filename %}">
+    {% csrf_token %}
+    <table>
+        <thead>
+            <tr>
+                {% for key in data.0.keys %}
+                <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                {% for value in row.values %}
+                <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit">Save Data</button>
+</form>
+{% endblock %}

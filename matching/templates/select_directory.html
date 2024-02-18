@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Select File from {{ directory }}{% endblock %}
+
+{% block content %}
+<h1>Select File from {{ directory }}</h1>
+<ul>
+    {% for file in files %}
+    <li>
+        <form method="post" action="{% url 'matching:save_selected_data' %}">
+            {% csrf_token %}
+            <input type="hidden" name="filename" value="{{ uploads_directory }}/{{ file }}">
+            <button type="submit">{{ file }}</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
