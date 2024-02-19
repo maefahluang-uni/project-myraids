@@ -7,7 +7,7 @@
 <ul>
     {% for file in files %}
     <li>
-        <form method="post" action="{% url 'matching:save_selected_data' %}">
+        <form method="post" action="{% url 'matching:save_selected_data' filename=file %}">
             {% csrf_token %}
             <input type="hidden" name="filename" value="{{ uploads_directory }}/{{ file }}">
             <button type="submit">{{ file }}</button>
