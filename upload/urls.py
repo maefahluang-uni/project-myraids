@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import upload_file
+from . import views
+
 
 urlpatterns = [
-     path('upload/', upload_file, name='upload_file'),
+    # path('', views.dashboard, name='dashboard'),
+     path('upload/', views.upload_file, name='upload_file'),
     # Add other URLs as needed
+   
 ]
-
-
