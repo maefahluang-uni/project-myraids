@@ -1,12 +1,14 @@
 from django.contrib import admin
+from .models import DebtorExcelBase, ClaimerExcelBase
 
-from .models import DebtorExcelBase
+@admin.register(DebtorExcelBase)
+class DebtorExcelBaseAdmin(admin.ModelAdmin):
+    list_display = ('No', 'AN', 'HN', 'CID', 'name', 'admit_date', 'left_date', 'total_days', 'Pdx', 'AdjRw', 'AuthenCode', 'Pttype', 'claim_catg', 'claim_folname', 'HospMain', 'HospSub', 'p_chart_status', 'expense_fee', 'amount_tobe_paid_fee', 'amount_paid_fee', 'debt_left_fee', 'room_food_fee', 'drug_fee', 'takehome_drug_fee', 'medical_supplie_fee', 'bloodcomponent_fee', 'Lab_fee', 'X_Ray_fee', 'special_inspection_fee', 'equipment_fee', 'procedure_fee', 'nursing_fee', 'dental_fee', 'physicaltharapy_fee', 'othertharapy_fee', 'other_fee', 'not_insure_fee', 'doctor_fee', 'total_fee')
+    search_fields = ('No', 'AN', 'HN', 'CID', 'name', 'claim_catg', 'claim_folname', 'HospMain', 'HospSub')
+    list_filter = ('admit_date', 'left_date', 'Pttype')
 
-
-class ExcelBaseAdmin(admin.ModelAdmin):
-
-    list_display = ['No', 'AN', 'HN', 'CID', 'name', 'nationality', 'admit_date']  # Customize the fields displayed in the admin list view
-
-
-admin.site.register(DebtorExcelBase, ExcelBaseAdmin)
-
+@admin.register(ClaimerExcelBase)
+class ClaimerExcelBaseAdmin(admin.ModelAdmin):
+    list_display = ('No', 'AN', 'HN', 'CID', 'name', 'admit_date', 'left_date', 'total_days', 'Pdx', 'AdjRw', 'AuthenCode', 'Pttype', 'claim_catg', 'claim_folname', 'HospMain', 'HospSub', 'p_chart_status', 'expense_fee', 'amount_tobe_paid_fee', 'amount_paid_fee', 'debt_left_fee', 'room_food_fee', 'drug_fee', 'takehome_drug_fee', 'medical_supplie_fee', 'bloodcomponent_fee', 'Lab_fee', 'X_Ray_fee', 'special_inspection_fee', 'equipment_fee', 'procedure_fee', 'nursing_fee', 'dental_fee', 'physicaltharapy_fee', 'othertharapy_fee', 'other_fee', 'not_insure_fee', 'doctor_fee', 'total_fee')
+    search_fields = ('No', 'AN', 'HN', 'CID', 'name', 'claim_catg', 'claim_folname', 'HospMain', 'HospSub')
+    list_filter = ('admit_date', 'left_date', 'Pttype')

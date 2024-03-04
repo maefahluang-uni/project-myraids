@@ -53,7 +53,7 @@ class DebtorExcelBase(models.Model):
 
     debt_left_fee = models.FloatField(null=True)
     room_food_fee = models.FloatField(null=True)
-
+    prosthetic_fee = models.FloatField(null=True)
     drug_fee = models.FloatField(null=True)
 
     takehome_drug_fee = models.FloatField(null=True)
@@ -83,6 +83,7 @@ class DebtorExcelBase(models.Model):
 
     doctor_fee = models.FloatField(null=True)
     total_fee = models.FloatField(null=True)
+
 
 class ClaimerExcelBase(models.Model):
 
@@ -134,7 +135,7 @@ class ClaimerExcelBase(models.Model):
 
     debt_left_fee = models.FloatField(null=True)
     room_food_fee = models.FloatField(null=True)
-
+    prosthetic_fee = models.FloatField(null=True)
     drug_fee = models.FloatField(null=True)
 
     takehome_drug_fee = models.FloatField(null=True)

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Column Mapping Form</title>
+    <style>
+        /* Your CSS styles here */
+    </style>
+</head>
+<body>
+    <form method="post" id="columnMappingForm">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <th>Excel Column</th>
+                <th>Model Field</th>
+            </tr>
+            {% for field_name, field in form.fields.items %}
+            <tr>
+                <td>{{ field.label }}</td>
+                <td>
+                    <select name="{{ field_name }}">
+                        <option value="">Select Model Field</option>
+                        {% for value, label in field.choices %}
+                        <option value="{{ value }}" onclick="hideSelectedOption(this)">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">Save Selected Data</button>
+    </form>
+
+    <script>
+        function hideSelectedOption(option) {
+            option.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
