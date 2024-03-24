@@ -9,6 +9,16 @@
     </style>
 </head>
 <body>
+    <label>Select Preset:</label>
+    <select name="preset_choice" id="presetChoice">
+        <option value="">Select Preset</option>
+        {% for preset, label in form.fields.preset_choice.choices %}
+        <option value="{{ preset }}">{{ label }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="button" id="applyPreset">Apply Preset</button>
+
     <form method="post" id="columnMappingForm">
         {% csrf_token %}
         <table>
@@ -16,16 +26,11 @@
                 <th>Excel Column</th>
                 <th>Model Field</th>
             </tr>
-            {% for field_name, field in form.fields.items %}
+            {% for field in form.visible_fields %}
             <tr>
-                <td>{{ field.label }}</td>
+                <td>{{ field.label_tag }}</td>
                 <td>
-                    <select name="{{ field_name }}">
-                        <option value="">Select Model Field</option>
-                        {% for value, label in field.choices %}
-                        <option value="{{ value }}" onclick="hideSelectedOption(this)">{{ label }}</option>
-                        {% endfor %}
-                    </select>
+                    {{ field }}
                 </td>
             </tr>
             {% endfor %}
@@ -34,8 +39,54 @@
     </form>
 
     <script>
-        function hideSelectedOption(option) {
-            option.style.display = 'none';
+        // Event listener for applying preset
+        document.getElementById('applyPreset').addEventListener('click', function() {
+            var selectedPreset = document.getElementById('presetChoice').value;
+            if (selectedPreset) {
+                applyPreset(selectedPreset);
+            } else {
+                alert('Please select a preset.');
+            }
+        });
+
+        // Function to apply preset
+        function applyPreset(selectedPreset) {
+            var formData = new FormData();
+            formData.append('preset_choice', selectedPreset);
+
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateDropdowns(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Function to update dropdowns based on data
+        function updateDropdowns(data) {
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    var dropdown = document.getElementsByName(key)[0];
+                    if (dropdown) {
+                        dropdown.innerHTML = '';
+                        var choices = data[key];
+                        choices.forEach(choice => {
+                            var option = document.createElement('option');
+                            option.value = choice[0];
+                            option.textContent = choice[1];
+                            dropdown.appendChild(option);
+                        });
+                    }
+                }
+            }
         }
     </script>
 </body>
