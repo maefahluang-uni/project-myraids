@@ -1,4 +1,3 @@
-# Match-excel
-- This feature enables users to compare data from two Excel files, identifying matches or discrepancies between them.
-Supports data reconciliation and validation processes, ensuring consistency and accuracy in the system's data.
+# presets for saving Match-excel
+- This feature enables users to fill the data of a dropdown menu use for saving data with a dropdown menu containing presets.
 - Responsible by Pyae Sone Han 
