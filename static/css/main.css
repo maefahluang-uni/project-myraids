@@ -17,11 +17,7 @@ body{
     background-color: #F4FAFD;
     overflow-x: hidden;
 }
-.container h1{
-    margin-top: 20px;
-    text-align: center;
-    padding-top: 3px;
-}
+
 svg{
     position: absolute;
     bottom: 0;
@@ -45,6 +41,7 @@ nav {
     flex-direction: column;
     align-items: center;
     padding-top: 20px; /* Adjust as needed */
+    z-index: 999;
 }
 
 .logo-container {
@@ -82,31 +79,129 @@ a:hover{
     border-radius: 10px;
 }
 
-/* <--------drop-down-------> */
-.dropdown-card {
-    position: relative;
-    display: inline-block;
+/* <--------name tag-------> */
+.top{
+    display: flex; /* Use flexbox for search bar alignment */
+    align-items: center; /* Vertically center search bar */
+    justify-content: space-between;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+.title p{
+    font-size: 36px;
+    margin-left: 83px;
+}
+.name-tag p{
+    font-size: 16px;
+    margin-left: 83px;
+    background-color: #BBDFF5;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-right: 84px;
+    border-radius: 10px;
+}
+.name-tag i{
+    margin-left: 10px;
 }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-}
-
-.dropdown-card:hover .dropdown-content {
-    display: block;
-}
-
-/* Styles for the arrow button */
-.arrow-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px;
+/* ------- button -------- */
+button {
+    margin-left: 1445px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    width: 150px; 
+    height: 40px;
+    font-size: 16px; 
+    background-color: #fff;
+    color: #000;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
+}
+button i{
+    margin-right: 10px;
+}
+
+/* ------- search bar -------- */
+.search-bar {
+    display: flex; /* Use flexbox for search bar alignment */
+    align-items: center; /* Vertically center search bar */
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.search-bar input {
+    width: 300px; /* Adjust the width of the search input */
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #D9D9D9;
+    padding: 0 10px;
+    margin-right: 5px; /* Add some space between input and button */
+    margin-left: 83px;
+    background-color: transparent;
+}
+.search-bar input::placeholder {
+    font-size: 16px; /* Adjust placeholder font size */
+}
+
+.search-bar button {
+    width: 40px; 
+    height: 40px;
+    background-color: #BBDFF5; 
+    color: #000; 
+    border: none; 
+    border-radius: 10px; 
+    cursor: pointer;
+    margin: 5px;
+}
+.search-bar button i{
+    margin-left: 10px;
+}
+
+.three-button {
+    display: flex;
+    position: relative;
+    align-items: center;
+    margin-right: 79px;
+}
+.three-button input  {
+    width: 300px; /* Adjust the width of the search input */
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #D9D9D9;
+    padding: 0 10px;
+    margin-right: 5px; /* Add some space between input and button */
+    background-color: transparent;
+}
+.three-button button {
+    width:100px; 
+    height: 40px;
+    background-color: #fff; 
+    color: #000; 
+    border: none; 
+    border-radius: 10px; 
+    cursor: pointer;
+    align-items: center;
+    padding: 10px;
+    margin: 5px;
+}
+.three-button button i{
+    margin-right: 15px;
+}
+
+/* <--------info table-------> */
+table {
+    position: relative;
+    width: 90%;
+    border-collapse: collapse;
+    background-color: #fff;
+    margin: 0 auto;
+}
+
+table th, table td {
+    border-bottom: 1px solid #D9D9D9;
+    padding: 10px;
+    text-align: left;
 }
