@@ -12,14 +12,26 @@ from urllib.parse import unquote
 
 
 def get_preset_names(request):
-    # Fetch preset data from the database
-    preset_data = FieldPreset.objects.all().values('name', 'preset_data')
+    if request.method == 'GET':
+        # Fetch preset names from the database
+        preset_names = FieldPreset.objects.all().values_list('name', flat=True)
+        # Return preset names as a JSON response
+        return JsonResponse(list(preset_names), safe=False)
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)
 
-    # Convert the queryset to a list of dictionaries
-    preset_dicts = list(preset_data)
-
-    # Return preset data as JSON response
-    return JsonResponse(preset_dicts, safe=False)
+def get_preset_data(request):
+    if request.method == 'POST' and 'preset_name' in request.POST:
+        preset_name = request.POST['preset_name']
+        try:
+            # Retrieve the preset object from the database
+            preset = FieldPreset.objects.get(name=preset_name)
+            # Return the preset data as JSON response
+            return JsonResponse(preset.preset_data, safe=False)
+        except FieldPreset.DoesNotExist:
+            return JsonResponse({'error': 'Preset not found'}, status=404)
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)    
 
 def display_data(request):
     uploads_directory = os.path.join(settings.MEDIA_ROOT)
@@ -66,13 +78,23 @@ def save_selected_data(request, filename):
         for preset in field_presets:
             model_field_presets[preset.name] = preset.preset_data
 
+        data_to_save = {}
         if request.method == 'POST':
             form = ColumnMappingForm(request.POST, excel_columns=excel_columns, model_fields=model_fields)
             if form.is_valid():
-                preset_choice = form.cleaned_data['preset_choice']
+                preset_choice = form.cleaned_data.get('preset_choice')
                 if preset_choice:
                     preset_data = model_field_presets.get(preset_choice, {})
-                    return JsonResponse(preset_data)
+                    for excel_column, field_name in preset_data.items():
+                        data_to_save[field_name] = df[excel_column]
+                else:
+                    for field_name, excel_column in form.cleaned_data.items():
+                        data_to_save[field_name] = df[excel_column]
+
+                # Save data_to_save to the respective model
+                Model.objects.bulk_create([Model(**{field: data[i] for field, data in data_to_save.items()}) for i in range(len(data_to_save[list(data_to_save.keys())[0]]))])
+
+                return JsonResponse({'success': True})
         else:
             form = ColumnMappingForm(excel_columns=excel_columns, model_fields=model_fields)
 
@@ -80,6 +102,9 @@ def save_selected_data(request, filename):
 
     except FileNotFoundError:
         return render(request, 'file_not_found.html', {'error': f'File "{decoded_filename}" not found'}, status=404)
+
+
+
 
 
 

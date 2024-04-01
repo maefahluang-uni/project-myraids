@@ -6,7 +6,7 @@ from django.db import models
 
 class DebtorExcelBase(models.Model):
 
-    No = models.IntegerField(unique=False, null=True, verbose_name="num")
+    No = models.IntegerField(unique=False, null=True,)
     AN = models.IntegerField(unique=False, null=True)
     HN = models.IntegerField(unique=False, null=True)
     CID = models.CharField(max_length=80, unique=False, null=True)
@@ -53,7 +53,7 @@ class DebtorExcelBase(models.Model):
 
 class ClaimerExcelBase(models.Model):
 
-    No = models.IntegerField(unique=False, null=True, verbose_name="num")
+    No = models.IntegerField(unique=False, null=True,)
     AN = models.IntegerField(unique=False, null=True)
     HN = models.IntegerField(unique=False, null=True)
     CID = models.CharField(max_length=80, unique=False, null=True)

@@ -1,11 +1,19 @@
 // Function to fetch preset names from the server
 function fetchPresetNames() {
-    fetch('/matching/get_preset_names/')  // Update the URL to match your Django URL pattern
+    fetch('/matching/get_preset_names/')
     .then(response => response.json())
     .then(data => {
         // Update the dropdown options with the received preset names
         const presetDropdown = document.getElementById('presetChoice');
         presetDropdown.innerHTML = ''; // Clear existing options
+
+        // Add a null option
+        const nullOption = document.createElement('option');
+        nullOption.value = '';
+        nullOption.textContent = 'Select Preset';
+        presetDropdown.appendChild(nullOption);
+
+
         data.forEach(presetName => {
             const option = document.createElement('option');
             option.value = presetName;
@@ -34,9 +42,9 @@ document.getElementById('applyPreset').addEventListener('click', function() {
 // Function to apply preset
 function applyPreset(selectedPreset) {
     var formData = new FormData();
-    formData.append('preset_choice', selectedPreset);
+    formData.append('preset_name', selectedPreset);
 
-    fetch(window.location.href, {
+    fetch('/matching/get_preset_data/', {
         method: 'POST',
         body: formData,
         headers: {
@@ -45,13 +53,13 @@ function applyPreset(selectedPreset) {
     })
     .then(response => response.json())
     .then(data => {
-        // Update dropdowns with received presets data
-        for (var presetName in data) {
-            if (data.hasOwnProperty(presetName)) {
-                var dropdown = document.getElementsByName(presetName)[0];
+        // Update dropdowns with received preset data
+        for (var fieldName in data) {
+            if (data.hasOwnProperty(fieldName)) {
+                var dropdown = document.getElementsByName(fieldName)[0];
                 if (dropdown) {
                     dropdown.innerHTML = '';
-                    var choices = data[presetName];
+                    var choices = data[fieldName];
                     choices.forEach(choice => {
                         var option = document.createElement('option');
                         option.value = choice;
@@ -63,7 +71,7 @@ function applyPreset(selectedPreset) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error applying preset:', error);
     });
 }
 
@@ -82,3 +90,19 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+// Function to toggle between preset mode and non-preset mode
+function toggleMode() {
+    const presetDropdown = document.getElementById('presetChoice');
+    const submitButton = document.querySelector('form button[type="submit"]');
+    if (presetDropdown.disabled) {
+        presetDropdown.disabled = false;
+        submitButton.textContent = 'Save Selected Data';
+    } else {
+        presetDropdown.disabled = true;
+        submitButton.textContent = 'Save Data';
+    }
+}
+
+// Event listener for the toggle button
+document.getElementById('toggleMode').addEventListener('click', toggleMode);

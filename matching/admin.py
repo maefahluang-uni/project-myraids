@@ -7,7 +7,7 @@ class FieldPresetForm(forms.ModelForm):
         model = FieldPreset
         fields = '__all__'
         widgets = {
-            'preset_data': forms.Textarea(attrs={'rows': 20, 'cols': 80})  # Adjust size as needed
+            'preset_data': forms.Textarea(attrs={'rows': 40, 'cols': 80})  # Adjust size as needed
         }
 
 @admin.register(DebtorExcelBase)
