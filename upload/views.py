@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .forms import FileUploadForm
 import os
 from pathlib import Path
+from django.http import HttpResponse
 
 def upload_file(request):
     if request.method == 'POST':
@@ -29,4 +30,12 @@ def upload_file(request):
     
     return render(request, 'upload.html', {'form': form})
 
+def history_view(request):
+    return render(request, "history.html")
+
+def matchcolumns_view(request):
+    return render(request, "matchcolumns.html")
+
+def dashboard_view(request):
+    return render(request, "dashboard.html")
 

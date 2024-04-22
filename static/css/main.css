@@ -79,6 +79,12 @@ a:hover{
     border-radius: 10px;
 }
 
+/* ----footer----- */
+footer p{
+    position: relative;
+}
+
+
 /* <--------name tag-------> */
 .top{
     display: flex; /* Use flexbox for search bar alignment */
