@@ -2,7 +2,7 @@
 {% extends 'base.html' %}
 
 
-{% block title %}History Log - My Website{% endblock %}
+{% block title %}Cliam and Debt Management{% endblock %}
 
 {% block content %}
     <!-- topic -->
@@ -16,22 +16,11 @@
     </div>
 
     <!-- button -->
-    <button>
-        <i class="fa-solid fa-upload"></i> อัพโหลดไฟล์
-    </button>
-
-    <div class="search-bar">
-        <div>
-            <input type="text" placeholder="ค้นหา">
-            <button><i class="fa-solid fa-search"></i></button>
-        </div>
         <div class="three-button">
             <input type="text" id="datepicker" placeholder="Select Date">
             <button><i class="fa-solid fa-filter"></i>กรอง</button>
-            <button><i class="fa-solid fa-pen-to-square"></i>แก้ไข</button>
             <button><i class="fa-solid fa-trash"></i>ลบ</button>
         </div>
-    </div>
 
 
     <!-- info table -->
@@ -39,11 +28,11 @@
         <table>
             <thead>
                 <tr>
-                    <th>Column 1</th>
-                    <th>Column 2</th>
-                    <th>Column 2</th>
-                    <th>Column 2</th>
-                    <th>Column 2</th>
+                    <th>ลำดับ</th>
+                    <th>วันที่</th>
+                    <th>เวลา</th>
+                    <th>ชื่อ</th>
+                    <th>ตำแหน่ง</th>
                     <!-- Add more table headers as needed -->
                 </tr>
             </thead>
