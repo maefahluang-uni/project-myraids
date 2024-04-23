@@ -39,3 +39,6 @@ def matchcolumns_view(request):
 def dashboard_view(request):
     return render(request, "dashboard.html")
 
+def login_view(request):
+    return render(request, 'login.html')    
+

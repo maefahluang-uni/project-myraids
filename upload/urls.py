@@ -8,6 +8,7 @@ urlpatterns = [
      path('history/', views.history_view, name='history_view'),
      path('matchcolumns/', views.matchcolumns_view, name='matchcolumns_view'),
      path('dashboard/', views.dashboard_view, name='dashboard_view'),
+     path('login/', views.login_view,name='login'),
     # Add other URLs as needed
    
-]
+] 
