@@ -211,3 +211,82 @@ table th, table td {
     padding: 10px;
     text-align: left;
 }
+
+/* <--------b5678-button dashboard-------> */
+
+.b5678-button {
+    position: absolute;
+    top: 50%;
+    right: 0; /* Align to the right */
+    transform: translateY(-50%);
+    
+}
+
+.four-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 60px;
+    padding-bottom: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-right: 84px;
+    border-radius: 10px;
+}
+
+.four-button button {
+    width: 200px;
+    height: 150px;
+    background-color: #000000;
+    color: #fff; /* Adjust the text color */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    align-items: center;
+    padding: 10px;
+    margin: 5px;
+}
+
+.four-button button i {
+    margin-right: 10px;
+}
+
+/* <--------b1234-button dashboard-------> */
+
+.b12-button,
+.b34-button {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+}
+
+.b12-button {
+    left: 30%; /* Adjust the left position */
+}
+
+.b34-button {
+    left: 45%; /* Adjust the left position */
+}
+
+.two-button {
+    display: flex;
+   
+    align-items: center;
+}
+
+.two-button button {
+    width: 200px;
+    height: 350px;
+    background-color: #000000;
+    color: #fff; /* Adjust the text color */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    align-items: center;
+    padding: 10px;
+    margin: 5px;
+}
+
+.two-button button i {
+    margin-right: 15px;
+}
