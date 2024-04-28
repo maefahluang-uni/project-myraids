@@ -35,12 +35,18 @@ def upload_file(request):
 def history_view(request):
     return render(request, "history.html")
 
-def matchcolumns_view(request):
-    return render(request, "matchcolumns.html")
+def match_view(request):
+    return render(request, "match.html")
 
 def dashboard_view(request):
     return render(request, "dashboard.html")
 
+<<<<<<< HEAD
 def login_view(request):
     return render(request, 'login.html')    
+=======
+def result_view(request):
+    return render(request,"result.html")
+
+>>>>>>> origin/matchcolumns
 
