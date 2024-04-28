@@ -197,6 +197,7 @@ button i{
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
     overflow: auto;
+
     align-items: center;
 }
 /* Modal content */
