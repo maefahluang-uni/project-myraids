@@ -1,3 +1,4 @@
+
 <!-- upload.html -->
 {% extends 'base.html' %}
 
@@ -98,48 +99,53 @@
 </section>
 
 <script>
+    $(document).ready(function() {
     var modal = document.getElementById("myModal");
-
-    // Get the button that opens the modal
-    var btn = document.getElementById("uploadButton");
-
-    // Get the <span> element that closes the modal
+    var uploadButton = document.getElementById("uploadButton");
     var closeBtn = document.getElementsByClassName("close")[0];
-    btn.onclick = function () {
+
+    // Show modal when the uploadButton is clicked
+    uploadButton.onclick = function() {
         modal.style.display = "block";
-    }
+    };
 
-    closeBtn.onclick = function () {
+    // Close modal when the close button (×) is clicked
+    closeBtn.onclick = function() {
         modal.style.display = "none";
-    }
+    };
 
-    window.onclick = function (event) {
+    // Close modal when clicking outside the modal content
+    window.onclick = function(event) {
         if (event.target == modal) {
             modal.style.display = "none";
         }
-    }
+    };
 
-    // $('#uploadForm').submit(function(event) {
-    //     event.preventDefault();
-    //     var formData = new FormData($(this)[0]);
-    //     $.ajax({
-    //         url: '/upload/', 
-    //         type: 'POST',
-    //         data: formData,
-    //         async: false,
-    //         cache: false,
-    //         contentType: false,
-    //         processData: false,
-    //         success: function(response) {
-    //             console.log('File uploaded successfully:', response);
-    //             modal.style.display = "none"; 
-    //         },
-    //         error: function(error) {
-    //             console.error('Error uploading file:', error);
-    //         }
-    //     });
-    // });
+    // Handle form submission
+    $('#myModal').on('submit', '#uploadForm', function(event) {
+        event.preventDefault(); // Prevent default form submission
+        var formData = new FormData(this); // Get form data
+
+        $.ajax({
+            url: '/upload/', 
+            type: 'POST',
+            data: formData,
+            processData: false, // Prevent jQuery from processing data
+            contentType: false, // Prevent jQuery from setting content type
+            success: function(response) {
+                console.log('File uploaded successfully:', response);
+                modal.style.display = "none"; // Close modal on success
+            },
+            error: function(error) {
+                console.error('Error uploading file:', error);
+            }
+        });
+    });
+});
+
+
 </script>
+{% endblock %}
 <!-- <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.file }}
@@ -148,4 +154,3 @@
         <br><br>
         <button type="submit">Upload</button>
     </form> -->
-{% endblock %}

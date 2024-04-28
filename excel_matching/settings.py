@@ -78,8 +78,12 @@ WSGI_APPLICATION = 'excel_matching.wsgi.application'
 # django_project/settings.py
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'c&d_db',
+        'USER': 'postgres',
+        'PASSWORD': 'powerranger',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
