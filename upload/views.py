@@ -41,12 +41,9 @@ def match_view(request):
 def dashboard_view(request):
     return render(request, "dashboard.html")
 
-<<<<<<< HEAD
 def login_view(request):
     return render(request, 'login.html')    
-=======
+
 def result_view(request):
     return render(request,"result.html")
-
->>>>>>> origin/matchcolumns
 

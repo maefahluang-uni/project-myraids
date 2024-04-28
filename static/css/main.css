@@ -247,7 +247,7 @@ button i{
     width: 300px; /* Adjust the width of the search input */
     height: 40px;
     border-radius: 10px;
-    border: 1px solid #D9D9D9;
+    border: 1px solid skyblue;
     padding: 0 10px;
     margin-right: 5px; /* Add some space between input and button */
     margin-left: 83px;
@@ -282,7 +282,7 @@ button i{
     width: 300px; /* Adjust the width of the search input */
     height: 40px;
     border-radius: 10px;
-    border: 1px solid #D9D9D9;
+    border: 1px solid skyblue;
     padding: 0 10px;
     margin-right: 5px; /* Add some space between input and button */
     background-color: transparent;
@@ -315,7 +315,7 @@ button i{
     width: 300px; /* Adjust the width of the search input */
     height: 40px;
     border-radius: 10px;
-    border: 1px solid #D9D9D9;
+    border: 1px solid skyblue;
     padding: 0 10px;
     margin-right: 5px; /* Add some space between input and button */
     background-color: transparent;
@@ -353,199 +353,4 @@ table th, table td {
     text-align: left;
 }
 
-<<<<<<< HEAD
-=======
-body {
-    font-family: Arial, sans-serif;
-}
 
-h2 {
-    margin-left: 300px;
-    margin-right: 300px; /* Adjust the value for the desired left margin */
-}
-
-.headings-container {
-    display: flex;
-    justify-content: space-between; /* Creates space between headings */
-    align-items: center; 
-    margin-top: 60px;/* Vertically aligns headings */
-}
-
-.rectangles-container {
-    display: flex; /* Enable flexbox layout */
-    justify-content: space-around;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-/* Rectangle styles */
-.rectangle {
-    width: 500px;
-    height: 500px;
-    background-color: white;
-    z-index: 1;  
-}
-
-.content-table {
-    border-collapse: collapse;
-    margin: 25px 0;
-    font-size: 0.9em;
-    min-width: 400px;
-    border-radius: 5px 5px 0 0;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgb(0, 0, 0, 0.15);
-
-}
-
-.content-table thead tr{
-    background-color: skyblue;
-    color: black;
-    text-align: left;
-    font-weight: bold;
-}
-
-.content-table th,
-.content-table td{
-    padding: 12px 15px;
-}
-
-.content-table tbody tr{
-    border-bottom: 1px soild white;
-}
- .content-table tbody tr:nth-last-of-type(even){
-    background-color: #f3f3f3;
-}
-
-.content-table tbody tr:last-of-type{
-    border-bottom: 2px soild skyblue;
-}
-
-.content-table tbody tr.active-row{
-    font-weight: bold;
-    color: skyblue;
-}
-
-.tables-container {
-    display: flex;
-    justify-content: space-around; /* Adjust spacing as needed */
-    gap: 20px;
-  }
-  
-/* Add button styles */
-.add-button {
-    background-color: skyblue;
-    border: none;
-    color: white;
-    padding: 10px 15px;
-    text-align: center;
-    text-decoration: none;
-    display: block;
-    font-size: 16px;
-    margin: 10px auto;
-    cursor: pointer;
-    border-radius: 50%; /* Make it round */
-    width: 50px; /* Set a fixed width */
-    height: 50px; /* Set a fixed height */
-}
-  .add-button:hover {
-    background-color: skyblue; /* Darker green on hover */
-  }
-  
-  .circle-plus {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    background-color: skyblue;
-    border-radius: 50%;
-    margin-right: 5px;
-  }
-
-.add-button .fas.fa-plus {
-    font-size: 24px; /* Adjust the font-size as needed */
-}
-
-.next-button nextbutton {
-    width:100px; 
-    height: 40px;
-    background-color: #fff; 
-    color: #000; 
-    border: none; 
-    border-radius: 10px; 
-    cursor: pointer;
-    align-items: center;
-    padding: 10px;
-    margin: 5px;
-}
-
-.next-button-container {
-    position: fixed;
-    bottom: 30px;
-    right: 95px;
-}
-
-.next-button-container .next-button {
-    width: 100px;
-    height: 40px;
-    background-color: #fff;
-    color: #000;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    align-items: center;
-    padding: 10px;
-    margin: 5px;
-}
-
-.next-button-container .next-button i {
-    margin-right: 5px; /* Adjust as needed */
-}
-
-.select-container{
-    display: flex;
-    justify-content: center;
-    position: relative;
-    min-width: 250px;
-    height: 50px;
-    margin-bottom: 200px;
-}
-
-.select-box{
-    border: 1px solid skyblue;
-    border-radius: 5px;
-    padding: 0 30px 0 15px;
-    width: 100%;
-    color: skyblue;
-    background-color: white;
-    font-size: 20px;
-    width: 100%; /* Adjust the width of the select box as needed */
-    padding: 5px;
-
-}
-.select-container .icon-container {
-    width: 50px;
-    height: 100%;
-    position: absolute;
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-}
-
-.icon-container i{
-    font-size: 30px;
-    color: skyblue;
-}
-
-
-
-
-
-
-
-
-
-
-
-  
->>>>>>> origin/matchcolumns

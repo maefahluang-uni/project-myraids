@@ -50,14 +50,11 @@
 
 <!-- info table -->
 <section class="data-table">
-    <table>
+    <table id="infoTable">
         <thead>
             <tr>
-                <th>Column 1</th>
-                <th>Column 2</th>
-                <th>Column 2</th>
-                <th>Column 2</th>
-                <th>Column 2</th>
+                <th>ชื่อไฟล์</th>
+                <th>เวลา</th>
                 <!-- Add more table headers as needed -->
             </tr>
         </thead>
@@ -98,7 +95,6 @@
     </table>
 </section>
 
-<<<<<<< HEAD
 <script>
     $(document).ready(function() {
     var modal = document.getElementById("myModal");
@@ -142,66 +138,15 @@
             }
         });
     });
+
+    
 });
 
 
 </script>
 {% endblock %}
-<!-- <form method="post" enctype="multipart/form-data">
-=======
-t
-    <!-- info table -->
-    <section class="data-table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Column 1</th>
-                    <th>Column 2</th>
-                    <th>Column 2</th>
-                    <th>Column 2</th>
-                    <th>Column 2</th>
-                    <!-- Add more table headers as needed -->
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Data 1</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <!-- Add more table data as needed -->
-                </tr>
-                <tr>
-                    <td>Data 1</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <!-- Add more table data as needed -->
-                </tr>
-                <tr>
-                    <td>Data 1</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <!-- Add more table data as needed -->
-                </tr>
-                <tr>
-                    <td>Data 1</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <!-- Add more table data as needed -->
-                </tr>
-            </tbody>
-        </table>
-    </section>
 
     <!-- <form method="post" enctype="multipart/form-data">
->>>>>>> origin/matchcolumns
         {% csrf_token %}
         {{ form.file }}
         <br><br>
