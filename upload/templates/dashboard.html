@@ -1,46 +1,99 @@
+<!-- upload.html -->
+{% extends 'base.html' %}
+
+
+{% block title %}Cliam and Debt Management{% endblock %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grid Layout</title>
-    <link rel="stylesheet" href="/static/css/dashboard.css">
-</head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            </a><img src="/static/css/logomc.png" alt="Logo"></a>
-            <p>Dashboard</p>
-            <div class="name-tag">
-                <p>ฟาซีระห์<i class="fa-solid fa-caret-down"></i></p>
-            </div>
-        </div>
-       
-    </nav>
+    <div class="title">
+        <p>dashboard</p>
+    </div>
 
-    
-     
-    
- 
-<div class="grid-container">
-    <div class="grid-item b5678-button">
-        <div class="four-button">
-            <button>1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>4</button>
+<div class="row">
+    <div class="column">
+        <div class="card">
+            <h3>Card 1</h3>
+            <p>Some text</p>
+            <p>Some text</p>
         </div>
     </div>
-    <div class="grid-item b12-button">
-            <button>5</button>
-            <button>6</button>
-            <button>7</button>
-            <button>8</button>
+
+    <div class="column">
+        <div class="card">
+            <h3>Card 2</h3>
+            <p>Some text</p>
+            <p>Some text</p>
+        </div>
+    </div>
+
+    <div class="column">
+        <div class="card">
+            <h3>Card 3</h3>
+            <p>Some text</p>
+            <p>Some text</p>
+        </div>
+    </div>
+
+    <div class="column">
+        <div class="card">
+            <h3>Card 4</h3>
+            <p>Some text</p>
+            <p>Some text</p>
         </div>
     </div>
 </div>
-</body>
-</html>
+
+<div class="row2">
+    <div class="column2">
+        <div class="card">
+            <h3>Card 1</h3>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+        </div>
+    </div>
+
+    <div class="column2">
+        <div class="card">
+            <h3>Card 2</h3>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+        </div>
+    </div>
+</div>
+
+<div class="row3">
+    <div class="column3">
+        <div class="card">
+            <h3>Card 1</h3>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+        </div>
+    </div>
+
+    <div class="column3">
+        <div class="card">
+            <h3>Card 2</h3>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+            <p>Some text</p>
+        </div>
+    </div>
+</div>
+
+
 {% endblock %}

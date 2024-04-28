@@ -1,0 +1,14 @@
+/* CSS to hide navigation menu by default */
+#navMenu {
+    display: none;
+    position: absolute;
+    top: 50px; /* Adjust as needed based on your layout */
+    left: 0;
+    width: 100%;
+    background-color: #333;
+}
+
+/* CSS to show navigation menu when 'show' class is applied */
+#navMenu.show {
+    display: block;
+}

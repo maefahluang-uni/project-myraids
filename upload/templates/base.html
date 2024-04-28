@@ -3,46 +3,106 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}My Website{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/js.css' %}">
     <script src="https://kit.fontawesome.com/a095932671.js" crossorigin="anonymous"></script>
 
 </head>
+
 <body>
     <header>
-        <div class="container">
+        <a class="container">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
                 <path fill="#bbdff5" fill-opacity="1"
                     d="M0,96L30,90.7C60,85,120,75,180,58.7C240,43,300,21,360,32C420,43,480,85,540,101.3C600,117,660,107,720,96C780,85,840,75,900,80C960,85,1020,107,1080,138.7C1140,171,1200,213,1260,229.3C1320,245,1380,235,1410,229.3L1440,224L1440,320L1410,320C1380,320,1320,320,1260,320C1200,320,1140,320,1080,320C1020,320,960,320,900,320C840,320,780,320,720,320C660,320,600,320,540,320C480,320,420,320,360,320C300,320,240,320,180,320C120,320,60,320,30,320L0,320Z">
                 </path>
             </svg>
-        <!-- nav bar -->
-            <!-- <nav>
-                <div class="logo-container">
-                    <img src="{% static 'css/logomc.png' %}" alt="Logo" class="logo">
+            <div id="topNav" class="topnav">
+                <span class="menu">&#9776;</span>
+                <img src="{% static 'css/logomc.png' %}" alt="Logo" class="logo">
+                <div class="dropdown">
+                    <button class="dropbtn">ฟาซีระห์<i class="fa-solid fa-caret-down"></i></button>
+                    <div class="dropdown-content">
+                        <a href="#">Log out</a>
+                    </div>
                 </div>
-                <ul id="navBar">
-                    <li><a href="{% url 'dashboard_view' %}">Dashboard</a></li>
-                    <li><a href="{% url 'upload_file' %}">ข้อมูลผู้ป่วย</a></li>
-                    <li><a href="{% url 'matchcolumns_view' %}">เปรียบเทียบข้อมูล</a></li>
-                    <li><a href="{% url 'history_view' %}">ประวัติการเข้าใช้งาน</a></li>
-                </ul>
-            </nav> -->
+            </div>
+            <!-- nav bar -->
+            <div id="navModel" class="nav">
+                <nav>
+                    <div class="logo-container">
+                        <img src="{% static 'css/logomc.png' %}" alt="Logo" class="logo2">
+                    </div>
+                    <ul id="navBar">
+                        <li><a href="{% url 'dashboard_view' %}">Dashboard</a></li>
+                        <li><a href="{% url 'upload_file' %}">ข้อมูลผู้ป่วย</a></li>
+                        <li><a href="{% url 'matchcolumns_view' %}">เปรียบเทียบข้อมูล</a></li>
+                        <li><a href="{% url 'history_view' %}">ประวัติการเข้าใช้งาน</a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </header>
     <main>
         {% block content %}
         {% endblock %}
     </main>
-    
-    
-    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the navigation menu and menu button
+            var nav = document.getElementById('navModel');
+            var menuBtn = document.querySelector('.menu');
+
+            // Toggle navigation menu visibility when the menu button is clicked
+            menuBtn.addEventListener('click', function (event) {
+                event.stopPropagation(); // Prevent the click event from bubbling to window
+                if (nav.style.display === 'block') {
+                    nav.style.display = 'none'; // Hide the navigation menu
+                } else {
+                    nav.style.display = 'block'; // Show the navigation menu
+                }
+            });
+
+            // Close the navigation menu when clicking outside of it
+            window.addEventListener('click', function (event) {
+                if (!event.target.closest('.topnav')) {
+                    nav.style.display = 'none'; // Hide the navigation menu
+                }
+            });
+                // Get the dropdown button and dropdown content
+                var dropdownBtn = document.querySelector('.dropbtn');
+                var dropdownContent = document.querySelector('.dropdown-content');
+
+                // Toggle dropdown visibility when the button is clicked
+                dropdownBtn.addEventListener('click', function (event) {
+                    event.stopPropagation(); // Prevent the click event from bubbling to document
+                    if (dropdownContent.style.display === 'block') {
+                        dropdownContent.style.display = 'none'; // Hide the dropdown
+                    } else {
+                        dropdownContent.style.display = 'block'; // Show the dropdown
+                    }
+                });
+
+                // Close the dropdown when clicking outside of it
+                document.addEventListener('click', function (event) {
+                    if (!event.target.matches('.dropbtn')) {
+                        dropdownContent.style.display = 'none'; // Hide the dropdown
+                    }
+                });
+
+        });
+
+    </script>
 
     <!-- <footer>
         <p>&copy; 2024 ExcelMatcher. All rights reserved.</p>
     </footer> -->
 </body>
+
 </html>

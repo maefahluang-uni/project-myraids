@@ -5,86 +5,142 @@
 {% block title %}Cliam and Debt Management{% endblock %}
 
 {% block content %}
-    <!-- topic -->
-    <div class="top">
-        <div class="title">
-            <p>ข้อมูลผู้ป่วย</p>
-        </div>
-        <div class="name-tag">
-            <p>ฟาซีระห์<i class="fa-solid fa-caret-down"></i></p>
-        </div>
+<!-- topic -->
+<div class="title">
+    <p>ข้อมูลผู้ป่วย</p>
+</div>
+
+<!-- button -->
+<button id="uploadButton"><i class="fa-solid fa-upload"></i> อัพโหลดไฟล์</button>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <div id="modalContent" class="modal-content">
+        <!-- Close button -->
+        <span class="close">&times;</span>
+
+        <h2>อัพโหลดไฟล์</h2>
+        <!-- File upload form -->
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.file }}
+            <br><br>
+            {{ form.location }}
+            <br><br>
+            <button type="submit">Upload</button>
+        </form>
     </div>
+</div>
 
-    <!-- button -->
-    <button>
-        <i class="fa-solid fa-upload"></i> อัพโหลดไฟล์
-    </button>
 
-    <div class="search-bar">
-        <div>
-            <input type="text" placeholder="ค้นหา">
-            <button><i class="fa-solid fa-search"></i></button>
-        </div>
-        <div class="three-button">
-            <input type="text" id="datepicker" placeholder="Select Date">
-            <button><i class="fa-solid fa-filter"></i>กรอง</button>
-            <button><i class="fa-solid fa-pen-to-square"></i>แก้ไข</button>
-            <button><i class="fa-solid fa-trash"></i>ลบ</button>
-        </div>
+<div class="search-bar">
+    <div>
+        <input type="text" placeholder="ค้นหา">
+        <button><i class="fa-solid fa-search"></i></button>
     </div>
+    <div class="three-button">
+        <input type="text" id="datepicker" placeholder="Select Date">
+        <button><i class="fa-solid fa-filter"></i>กรอง</button>
+        <button><i class="fa-solid fa-pen-to-square"></i>แก้ไข</button>
+        <button><i class="fa-solid fa-trash"></i>ลบ</button>
+    </div>
+</div>
 
 
-    <!-- info table -->
-    <section class="data-table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Column 1</th>
-                    <th>Column 2</th>
-                    <th>Column 2</th>
-                    <th>Column 2</th>
-                    <th>Column 2</th>
-                    <!-- Add more table headers as needed -->
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Data 1</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <!-- Add more table data as needed -->
-                </tr>
-                <tr>
-                    <td>Data 1</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <!-- Add more table data as needed -->
-                </tr>
-                <tr>
-                    <td>Data 1</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <!-- Add more table data as needed -->
-                </tr>
-                <tr>
-                    <td>Data 1</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <td>Data 2</td>
-                    <!-- Add more table data as needed -->
-                </tr>
-            </tbody>
-        </table>
-    </section>
+<!-- info table -->
+<section class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Column 1</th>
+                <th>Column 2</th>
+                <th>Column 2</th>
+                <th>Column 2</th>
+                <th>Column 2</th>
+                <!-- Add more table headers as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <!-- Add more table data as needed -->
+            </tr>
+            <tr>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <!-- Add more table data as needed -->
+            </tr>
+            <tr>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <!-- Add more table data as needed -->
+            </tr>
+            <tr>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <td>Data 2</td>
+                <!-- Add more table data as needed -->
+            </tr>
+        </tbody>
+    </table>
+</section>
 
-    <!-- <form method="post" enctype="multipart/form-data">
+<script>
+    var modal = document.getElementById("myModal");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("uploadButton");
+
+    // Get the <span> element that closes the modal
+    var closeBtn = document.getElementsByClassName("close")[0];
+    btn.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    closeBtn.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // $('#uploadForm').submit(function(event) {
+    //     event.preventDefault();
+    //     var formData = new FormData($(this)[0]);
+    //     $.ajax({
+    //         url: '/upload/', 
+    //         type: 'POST',
+    //         data: formData,
+    //         async: false,
+    //         cache: false,
+    //         contentType: false,
+    //         processData: false,
+    //         success: function(response) {
+    //             console.log('File uploaded successfully:', response);
+    //             modal.style.display = "none"; 
+    //         },
+    //         error: function(error) {
+    //             console.error('Error uploading file:', error);
+    //         }
+    //     });
+    // });
+</script>
+<!-- <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.file }}
         <br><br>
