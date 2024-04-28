@@ -10,16 +10,6 @@ from .models import DebtorExcelBase, ClaimerExcelBase, FieldPreset
 from .forms import ColumnMappingForm
 from urllib.parse import unquote
 
-
-def get_preset_names(request):
-    if request.method == 'GET':
-        # Fetch preset names from the database
-        preset_names = FieldPreset.objects.all().values_list('name', flat=True)
-        # Return preset names as a JSON response
-        return JsonResponse(list(preset_names), safe=False)
-    else:
-        return JsonResponse({'error': 'Invalid request'}, status=400)
-
 def get_preset_data(request):
     if request.method == 'POST' and 'preset_name' in request.POST:
         preset_name = request.POST['preset_name']
@@ -30,6 +20,13 @@ def get_preset_data(request):
             return JsonResponse(preset.preset_data, safe=False)
         except FieldPreset.DoesNotExist:
             return JsonResponse({'error': 'Preset not found'}, status=404)
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)
+    
+def get_preset_names(request):
+    if request.method == 'GET':
+        presets = FieldPreset.objects.all().values_list('name', flat=True)
+        return JsonResponse(list(presets), safe=False)
     else:
         return JsonResponse({'error': 'Invalid request'}, status=400)    
 
@@ -51,8 +48,6 @@ def list_files(directory):
             files.append(file_path)
     return files
 
-
-
 def save_selected_data(request, filename):
     resolved_filename = resolve(request.path_info).kwargs.get('filename')
     decoded_filename = unquote(resolved_filename)
@@ -60,6 +55,7 @@ def save_selected_data(request, filename):
 
     try:
         df = pd.read_excel(file_path)
+        
         subdirectory = os.path.dirname(decoded_filename)
 
         if subdirectory == 'debtor':
@@ -88,11 +84,26 @@ def save_selected_data(request, filename):
                     for excel_column, field_name in preset_data.items():
                         data_to_save[field_name] = df[excel_column]
                 else:
-                    for field_name, excel_column in form.cleaned_data.items():
+                    # If no preset is chosen, use the provided column-to-field mapping directly
+                    column_to_field_mapping = form.cleaned_data
+                    for excel_column, field_name in column_to_field_mapping.items():
                         data_to_save[field_name] = df[excel_column]
 
                 # Save data_to_save to the respective model
-                Model.objects.bulk_create([Model(**{field: data[i] for field, data in data_to_save.items()}) for i in range(len(data_to_save[list(data_to_save.keys())[0]]))])
+                objects_to_create = []
+                for i in range(len(data_to_save[list(data_to_save.keys())[0]])):
+                    kwargs = {}
+                    for field, data in data_to_save.items():
+                        if field in ['admit_date', 'left_date']:
+                            try:
+                                kwargs[field] = datetime.strptime(data[i], '%d/%m/%Y').strftime('%Y-%m-%d')
+                            except ValueError:
+                                return JsonResponse({'error': f'Invalid date format in column "{field}"'}, status=400)
+                        else:
+                            kwargs[field] = data[i]
+                    objects_to_create.append(Model(**kwargs))
+                
+                Model.objects.bulk_create(objects_to_create)
 
                 return JsonResponse({'success': True})
         else:
@@ -102,11 +113,6 @@ def save_selected_data(request, filename):
 
     except FileNotFoundError:
         return render(request, 'file_not_found.html', {'error': f'File "{decoded_filename}" not found'}, status=404)
-
-
-
-
-
 
 
 

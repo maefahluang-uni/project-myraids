@@ -1,9 +1,8 @@
 // Function to fetch preset names from the server
 function fetchPresetNames() {
-    fetch('/matching/get_preset_names/')
+    fetch('/matching/get_preset_names/') // Replace {% url "matching:get_preset_names" %} with the actual URL
     .then(response => response.json())
     .then(data => {
-        // Update the dropdown options with the received preset names
         const presetDropdown = document.getElementById('presetChoice');
         presetDropdown.innerHTML = ''; // Clear existing options
 
@@ -12,7 +11,6 @@ function fetchPresetNames() {
         nullOption.value = '';
         nullOption.textContent = 'Select Preset';
         presetDropdown.appendChild(nullOption);
-
 
         data.forEach(presetName => {
             const option = document.createElement('option');
@@ -26,25 +24,12 @@ function fetchPresetNames() {
     });
 }
 
-// Call the function to fetch preset names when the page loads
-window.addEventListener('DOMContentLoaded', fetchPresetNames);
-
-// Event listener for applying preset
-document.getElementById('applyPreset').addEventListener('click', function() {
-    var selectedPreset = document.getElementById('presetChoice').value;
-    if (selectedPreset) {
-        applyPreset(selectedPreset);
-    } else {
-        alert('Please select a preset.');
-    }
-});
-
 // Function to apply preset
 function applyPreset(selectedPreset) {
     var formData = new FormData();
     formData.append('preset_name', selectedPreset);
 
-    fetch('/matching/get_preset_data/', {
+    fetch('/matching/get_preset_data/', { // Replace {% url "matching:get_preset_data" %} with the actual URL
         method: 'POST',
         body: formData,
         headers: {
@@ -106,3 +91,45 @@ function toggleMode() {
 
 // Event listener for the toggle button
 document.getElementById('toggleMode').addEventListener('click', toggleMode);
+
+// Event listener for applying preset
+document.getElementById('applyPreset').addEventListener('click', function() {
+    var selectedPreset = document.getElementById('presetChoice').value;
+    if (selectedPreset) {
+        applyPreset(selectedPreset);
+    } else {
+        alert('Please select a preset.');
+    }
+});
+
+// Event listener for DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    fetchPresetNames(); // Fetch preset names when the page loads
+
+    const storedMapping = localStorage.getItem('userMapping');
+    if (storedMapping) {
+        const mapping = JSON.parse(storedMapping);
+        Object.keys(mapping).forEach(function(excelColumn) {
+            const selectElement = document.getElementById(excelColumn);
+            if (selectElement) {
+                const selectedValue = mapping[excelColumn];
+                const option = selectElement.querySelector(`option[value="${selectedValue}"]`);
+                if (option) {
+                    option.selected = true;
+                }
+            }
+        });
+    }
+});
+
+// Function to save user mapping
+function saveUserMapping() {
+    const mapping = {};
+    const selectElements = document.querySelectorAll('select');
+    selectElements.forEach(function(selectElement) {
+        const excelColumn = selectElement.id;
+        const selectedValue = selectElement.value;
+        mapping[excelColumn] = selectedValue;
+    });
+    localStorage.setItem('userMapping', JSON.stringify(mapping));
+}
