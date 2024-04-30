@@ -22,13 +22,13 @@ def get_preset_data(request):
             return JsonResponse({'error': 'Preset not found'}, status=404)
     else:
         return JsonResponse({'error': 'Invalid request'}, status=400)
-    
+
 def get_preset_names(request):
     if request.method == 'GET':
         presets = FieldPreset.objects.all().values_list('name', flat=True)
         return JsonResponse(list(presets), safe=False)
     else:
-        return JsonResponse({'error': 'Invalid request'}, status=400)    
+        return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def display_data(request):
     uploads_directory = os.path.join(settings.MEDIA_ROOT)
@@ -55,7 +55,7 @@ def save_selected_data(request, filename):
 
     try:
         df = pd.read_excel(file_path)
-        
+
         subdirectory = os.path.dirname(decoded_filename)
 
         if subdirectory == 'debtor':
@@ -63,7 +63,8 @@ def save_selected_data(request, filename):
         elif subdirectory == 'claimer':
             Model = ClaimerExcelBase
         else:
-            return render(request, 'file_not_found.html', {'error': f'Subdirectory "{subdirectory}" not recognized'}, status=404)
+            return render(request, 'file_not_found.html',
+                          {'error': f'Subdirectory "{subdirectory}" not recognized'}, status=404)
 
         excel_columns = list(df.columns)
         model_fields = {field.name: field.verbose_name for field in Model._meta.get_fields()}
@@ -98,14 +99,15 @@ def save_selected_data(request, filename):
                             try:
                                 kwargs[field] = datetime.strptime(data[i], '%d/%m/%Y').strftime('%Y-%m-%d')
                             except ValueError:
-                                return JsonResponse({'error': f'Invalid date format in column "{field}"'}, status=400)
+                                return JsonResponse({'error': f'Invalid date format in column "{field}"'},
+                                                  status=400)
                         else:
                             kwargs[field] = data[i]
                     objects_to_create.append(Model(**kwargs))
-                
+
                 Model.objects.bulk_create(objects_to_create)
 
-                return JsonResponse({'success': True})
+                return render(request, 'save_data.html')
         else:
             form = ColumnMappingForm(excel_columns=excel_columns, model_fields=model_fields)
 
@@ -113,7 +115,3 @@ def save_selected_data(request, filename):
 
     except FileNotFoundError:
         return render(request, 'file_not_found.html', {'error': f'File "{decoded_filename}" not found'}, status=404)
-
-
-
-

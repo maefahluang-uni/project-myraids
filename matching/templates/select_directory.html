@@ -8,18 +8,21 @@
 <body>
 
     <main>
-        <h1>Select File from {{ directory }}</h1>
-        <ul>
-            {% for file in files %}
-            <li>
-                <form method="post" action="{% url 'matching:save_selected_data' filename=file %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="filename" value="{{ uploads_directory }}/{{ file }}">
-                    <button type="submit">{{ file }}</button>
-                </form>
-            </li>
-            {% endfor %}
-        </ul>
+        <h1>Select File From {{ directory }}</h1>
+        <div class="file-list">
+            <ul>
+                {% for file in files %}
+                <li>
+                    <form method="post" action="{% url 'matching:save_selected_data' filename=file %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="filename" value="{{ uploads_directory }}/{{ file }}">
+                        <button type="submit">{{ file }}</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
     </main>
 </body>
 {% endblock %}

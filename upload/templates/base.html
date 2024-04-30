@@ -59,10 +59,6 @@
             text-decoration: underline;
         }
 
-        h1 {
-            margin-bottom: 30px;
-        }
-
         main {
             max-width: 1000px;
             margin: 0 auto;
@@ -87,14 +83,10 @@
             padding: 0;
         }
 
-        /* Styles for list items */
-        .filebutt li {
-            margin-bottom: 20px;
-        }
-
         /* Styles for file selection form */
         form {
             display: inline;
+            margin-bottom: 10px;
             /* Display the form elements inline */
         }
 
@@ -107,17 +99,22 @@
         /* Styles for submit button */
         button[type="submit"] {
             background-color: #bbdff5;
-            color: black;
             padding: 10px 20px;
+            margin-bottom: 20px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+        button[type="submit"] a{
+            color: black;
+        }
 
         button[type="submit"]:hover {
             background-color: #97cdef;
         }
+        
+        
     </style>
 </head>
 
