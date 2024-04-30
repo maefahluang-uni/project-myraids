@@ -22,9 +22,12 @@ def upload_file(request):
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
             
-            return render(request, 'success.html', {'message': 'File uploaded successfully.'})
+            return render(request, 'success.html', )
     else:
         form = FileUploadForm()
     
     return render(request, 'upload.html', {'form': form})
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/Felix_upload_UI

@@ -1,16 +1,20 @@
-<!-- upload.html -->
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}Upload File - My Website{% endblock %}
+<link rel="stylesheet" href="{% static 'main.css' %}">
 
 {% block content %}
-    <h2>Upload File</h2>
-    <form method="post" enctype="multipart/form-data">
+<!DOCTYPE html>
+<html lang="en">
+    <main>
+     <h2>Upload File</h2>
+     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.file }}
         <br><br>
         {{ form.location }}
         <br><br>
         <button type="submit">Upload</button>
-    </form>
+     </form>
+    </main>
 {% endblock %}
