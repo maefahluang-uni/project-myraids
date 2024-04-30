@@ -27,3 +27,4 @@ def upload_file(request):
         form = FileUploadForm()
     
     return render(request, 'upload.html', {'form': form})
+

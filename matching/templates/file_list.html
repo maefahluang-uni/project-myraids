@@ -3,9 +3,29 @@
 {% block title %}Uploaded Directories{% endblock %}
 
 {% block content %}
-<h1>Uploaded Directories</h1>
-<ul>
-    <li><a href="{% url 'matching:select_directory' directory='claimer' %}">Claimer</a></li>
-    <li><a href="{% url 'matching:select_directory' directory='debtor' %}">Debtor</a></li>
-</ul>
+<body>
+    
+    <main>
+        <h1>Uploaded Directories</h1>
+        <div class="filebutt">
+            <ul>
+                <li>
+                    <form method="post" action="{% url 'matching:select_directory' directory='claimer' %}">
+                        {% csrf_token %}
+                        <button type="submit">Claimer</button>
+                    </form>
+                </li>
+                <li>
+                    <form method="post" action="{% url 'matching:select_directory' directory='debtor' %}">
+                        {% csrf_token %}
+                        <button type="submit">Debtor</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+        
+    </main>
+</body>
+    
+
 {% endblock %}
