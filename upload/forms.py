@@ -7,3 +7,4 @@ class FileUploadForm(forms.Form):
         ('claimer', 'Claimer'),
     )
     location = forms.ChoiceField(choices=location_choices, widget=forms.RadioSelect)
+

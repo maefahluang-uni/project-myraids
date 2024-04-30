@@ -1,10 +1,37 @@
-<!-- success.html -->
 {% extends 'base.html' %}
 
 {% block title %}Upload Success - My Website{% endblock %}
 
+<!DOCTYPE html>
+<html lang="en">
+
 {% block content %}
-    <h2>Upload Success</h2>
-    <p>{{ message }}</p>
-    <!-- You can add links or other content here -->
+<head>
+    <meta charset="UTF-8">
+    <title>File Upload Success</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+</head>
+<body>
+    <p id="success-message"></p>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Get the success message from Django context
+            var message = "{{ message }}";
+            $("#success-message").text(message);
+
+            // Use SweetAlert2 for animation
+            Swal.fire({
+                icon: 'success',
+                title: 'Successfully!',
+                text: message,
+            });
+        });
+    </script>
+</body>
+</html>
+
 {% endblock %}
