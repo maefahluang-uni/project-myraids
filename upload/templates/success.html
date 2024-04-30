@@ -28,6 +28,14 @@
                 icon: 'success',
                 title: 'Successfully!',
                 text: message,
+                showCancelButton: false,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                // Redirect to the upload page when OK button is clicked
+                if (result.isConfirmed) {
+                    window.location.href = "{% url 'upload:upload_file' %}";
+                }
             });
         });
     </script>

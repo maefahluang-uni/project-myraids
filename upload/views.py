@@ -27,7 +27,3 @@ def upload_file(request):
         form = FileUploadForm()
     
     return render(request, 'upload.html', {'form': form})
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/Felix_upload_UI

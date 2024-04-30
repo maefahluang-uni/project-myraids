@@ -114,8 +114,6 @@ def save_selected_data(request, filename):
         return render(request, 'save_data_form.html', {'form': form})
 
     except FileNotFoundError:
-<<<<<<< HEAD
         return render(request, 'file_not_found.html', {'error': f'File "{decoded_filename}" not found'}, status=404)
-=======
+
         return render(request, 'file_not_found.html', {'error': f'File "{decoded_filename}" not found'}, status=404)
->>>>>>> origin/Felix_upload_UI
