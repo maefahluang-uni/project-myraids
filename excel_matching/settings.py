@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'excel_matching.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'c&d_db',
+        'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'powerranger',
         'HOST': 'localhost',
