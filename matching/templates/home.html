@@ -1,11 +1,10 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Column Mapping Form</title>
+    <title>Claim and Dept Management</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Quicksand:wght@300..700&display=swap');
 
@@ -16,13 +15,11 @@
             box-sizing: border-box;
             list-style: none;
             text-decoration: none;
-
         }
-
+        
         body {
             font-family: Arial, sans-serif;
             background-color: #F4FAFD;
-            /* Set your desired background color */
         }
 
         header {
@@ -32,6 +29,18 @@
             /* Vertical padding */
         }
 
+        .dashboard-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            margin-top: 20px; /* Adjust as needed */
+        }
+
+        .dashboard-header h1 {
+            margin: 0;
+        }
+
         .container {
             max-width: 1200px;
             height: 50px;
@@ -39,100 +48,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-
-        h1 {
-            margin-top: 20px;
-            margin-bottom: 30px;
-        }
-
-        main {
-            max-width: 1000px;
-            margin: 0 auto;
-            margin-top: 50px;
-            margin-bottom: 100px;
-            padding: 20px;
-            background-color: #ffffff;
-            /* Optional: Content area background color */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            /* Optional: Add a subtle box shadow */
-            text-align: center;
-            overflow: auto;
-        }
-
-        select {
-            width: 200px;
-            border: 1px solid skyblue;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-
-        button {
-            background-color: #bbdff5;
-            color: black;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-right: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        button:hover {
-            background-color: #97CDEF;
-        }
-
-        /* Styles to center the form */
-        #columnMappingForm {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            box-sizing: border-box;
-            min-height: 100vh;
-            /* Adjust as needed to fill the viewport height */
-        }
-
-        /* Styles for the table */
-        table {
-            width: 100%;
-            max-width: 800px;
-            /* Ensure table occupies full width of its container */
-            border-collapse: collapse;
-            /* Collapse table borders */
-            margin-bottom: 20px;
-        }
-
-        /* Styles for table headers and cells */
-        th,
-        td {
-            padding: 8px;
-            border: 1px solid skyblue;
-            text-align: center;
-        }
-
-        /* Styles for table header (first row) */
-        thead {
-            background-color: #bbdff5;
-        }
-
-        /* Styles for form button */
-        button[type="submit"] {
-            margin-top: 30px;
-            /* Add spacing above the button */
-            padding: 10px 20px;
-            background-color: #bbdff5;
-            color: black;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        button[type="submit"]:hover {
-            background-color: #97CDEF;
         }
         /* <-------navigation bar--------> */
             .logo {
@@ -200,8 +115,56 @@
             padding: 7px;
             border-radius: 10px;
         }
+        /* ----card---- */
+        .main-content {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin-left: 220px; /* Adjust for navbar width */
+            margin-right: 220px;
+        }
+        .right-column h1 {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        p {
+            margin-top: 20px;
+        }
+
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            width: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            width: auto;
+            margin-left: 30px;
+            gap: 10px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .medium-card {
+            height: auto; /* Adjust height as needed */
+        }
+
+        .small-card {
+            height: auto; /* Adjust height as needed */
+        }
     </style>
-    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 
 <body>
@@ -210,7 +173,7 @@
             <!-- Logo or branding (optional) -->
             <div class="logo">
                 <span class="menu">&#9776;</span>
-                <img src="static/logomc.png" alt="Lamp" width="180" height="auto">
+                <img src="https://maechanhospital.go.th/images/logo66.png" alt="Lamp" width="180" height="auto">
             </div>
             <!-- nav bar -->
             <div id="navModel" class="nav">
@@ -220,52 +183,60 @@
                             class="logo2">
                     </div>
                     <ul id="navBar">
+                        <li><a href="{% url 'home' %}">Dashboard</a></li>
                         <li><a href="{% url 'upload:upload_file' %}">Upload</a></li>
                         <li><a href="{% url 'matching:display_data' %}">Save File</a></li>
+                        <li><a href="">Matching</a></li>
                     </ul>
                 </nav>
             </div>
         </div>
     </header>
-    <main>
-        <h1>Save Preset File</h1>
-        <label for="presetChoice">Select Preset:</label>
-        <select name="preset_choice" id="presetChoice">
-            <option value="">Select Preset</option>
-            {% for preset, label in form.fields.preset_choice.choices %}
-            <option value="{{ preset }}">{{ label }}</option>
-            {% endfor %}
-        </select>
 
-        <button type="button" id="applyPreset">Apply Preset</button>
+    <div class="dashboard-header">
+        <h1>
+            Dashboard
+        </h1>
+    </div>
 
-        <button type="button" id="toggleMode">Switch Mode</button>
-
-        <form method="post" id="columnMappingForm">
-            {% csrf_token %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Excel Column</th>
-                        <th>Model Field</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for field in form.visible_fields %}
-                    <tr>
-                        <td>{{ field.label_tag }}</td>
-                        <td>
-                            {{ field }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button type="submit">Save Selected Data</button>
-        </form>
-
-        <script src="{% static 'js/presets.js' %}"></script>
-    </main>
+    <div class="main-content">
+        <div class="left-column">
+            <div class="card medium-card">
+                <img src="https://i.pinimg.com/originals/3a/13/54/3a13541f4d0ac397796ed3d8e3ac0f40.jpg" alt="" width="500" height="500">
+                <h3>Graph 1</h3>
+            </div>
+            <div class="card medium-card">
+                <img src="https://i.pinimg.com/originals/d1/c8/4e/d1c84ec06916131e7f9f44c7b29586c9.jpg" alt="" width="500" height="500">
+                <h3>Graph 2</h3>
+            </div>
+            <div class="card medium-card">
+                <img src="https://i.pinimg.com/originals/94/80/69/94806947591f98f8e25aa7805e7c0c17.jpg" alt="" width="500" height="500">
+                <h3>Graph 3</h3>
+            </div>
+            <div class="card medium-card">
+                <img src="https://i.pinimg.com/originals/70/a2/d7/70a2d7dff35d82ab6f263bed422ac177.jpg" alt="" width="500" height="500">
+                <h3>Graph 4</h3>
+            </div>
+        </div>
+        <div class="right-column">
+            <div class="card small-card">
+                <h1>1000</h1>
+                <p>All user</p>
+            </div>
+            <div class="card small-card">
+                <h1>1000</h1>
+                <p>All user</p>
+            </div>
+            <div class="card small-card">
+                <h1>1000</h1>
+                <p>All user</p>
+            </div>
+            <div class="card small-card">
+                <h1>1000</h1>
+                <p>All user</p>
+            </div>
+        </div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

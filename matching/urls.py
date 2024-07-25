@@ -11,6 +11,7 @@ urlpatterns = [
     path('get_preset_data/', views.get_preset_data, name='get_preset_data'),
     path('select/<path:directory>/', views.select_directory, name='select_directory'),
     path('save/<path:filename>/', views.save_selected_data, name='save_selected_data'),
+    path('home/', views.home, name='home'),
 ]
 
 # Serve static files during development
