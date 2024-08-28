@@ -23,4 +23,5 @@ urlpatterns = [
     path('', include('upload.urls', namespace='upload')),
     path('matching/',include('matching.urls', namespace='matching')),
     path('', matching_views.home, name='home'),
+    path('compare/',include('compare.urls', namespace= 'comparefiles')),
 ]

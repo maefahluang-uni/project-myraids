@@ -1,0 +1,79 @@
+/* style.css */
+
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.results-table th, .results-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.results-table th {
+    background-color: #f4f4f4;
+    text-align: left;
+}
+
+.results-table .green {
+    color: green;
+}
+
+.results-table .yellow {
+    color: yellow;
+}
+
+.results-table .red {
+    color: red;
+}
+
+.results-table td a {
+    color: blue;
+    text-decoration: underline;
+}
+
+.results-table td a:hover {
+    text-decoration: none;
+}
+
+/* Base styles for form */
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+}
+
+.form-section {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+h3 {
+    margin-bottom: 10px;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Style checkboxes to look better */
+input[type="checkbox"] {
+    margin-right: 5px;
+}
