@@ -74,6 +74,7 @@ def compare_data(debtor_records, claimer_records, debtor_key_columns, claimer_ke
             'status': 'Green',
             'description': 'Everything matches.',
         }
+        
 
         # Check for NaN values
         if row.isnull().any():

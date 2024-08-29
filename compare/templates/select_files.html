@@ -21,28 +21,100 @@
         body {
             background-color: #F4FAFD;
         }
-
         header {
             background-color: #fff;
+            /* Navbar background color */
             padding: 10px 0;
+            /* Vertical padding */
         }
-
         .container {
             max-width: 1200px;
+            height: 50px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
+        /* <-------navigation bar--------> */
+            .logo {
+            display: flex;
+            justify-content: center;
+            /* Center items horizontally */
+            align-items: center;
+        }
+
+        .menu {
+            font-size: 36px;
+            cursor: pointer;
+        }
+        .menu:hover {
+            background-color: #bbdff5;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .nav {
+            background-color: #fff;
+            width: 200px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            z-index: 999;
+        }
+
+        .logo-container {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo2 {
+            width: 200px;
+            height: auto;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            padding: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+            display: block;
+            padding: 7px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        a:hover {
+            background-color: #bbdff5;
+            padding: 7px;
+            border-radius: 10px;
+        }
+
+        /* <-----main-----> */
         h1 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
             margin-top: 20px;
-            margin-bottom: 30px;
         }
 
         main {
             max-width: 1000px;
-            margin: 50px auto;
+            margin: 20px auto;
             padding: 20px;
             background-color: #ffffff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -97,7 +169,8 @@
         }
 
         button[type="submit"] {
-            margin-top: 30px;
+            margin-top: 20px;
+            margin-bottom: 20px;
             padding: 10px 20px;
             background-color: #bbdff5;
             color: black;
@@ -110,17 +183,23 @@
         button[type="submit"]:hover {
             background-color: #97CDEF;
         }
-
+        .form-container{
+            margin: 20px 20px;
+        }
         .form-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+        }
+        .form-row2 {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
         }
 
         .form-section-left,
         .form-section-right {
             flex: 1;
-            margin-right: 20px;
+            margin-right: 80px;
         }
 
         .form-section-right {
@@ -132,14 +211,30 @@
 <body>
     <header>
         <div class="container">
+            <!-- Logo or branding (optional) -->
             <div class="logo">
                 <span class="menu">&#9776;</span>
-                <img src="{% static 'logomc.png' %}" alt="Logo" width="180" height="auto">
+                <img src="https://maechanhospital.go.th/images/logo66.png" alt="Lamp" width="180" height="auto">
+            </div>
+            <!-- nav bar -->
+            <div id="navModel" class="nav">
+                <nav>
+                    <div class="logo-container">
+                        <img src="https://maechanhospital.go.th/images/logo66.png" alt="Logo" width="180" height="auto"
+                            class="logo2">
+                    </div>
+                    <ul id="navBar">
+                        <li><a href="{% url 'home' %}">Dashboard</a></li>
+                        <li><a href="{% url 'upload:upload_file' %}">Upload</a></li>
+                        <li><a href="{% url 'matching:display_data' %}">Save File</a></li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </header>
+    <h1>Select Files for Comparison</h1>
     <main>
-        <h1>Select Files for Comparison</h1>
+        
 
         <form method="post" id="columnMappingForm">
             {% csrf_token %}
@@ -157,7 +252,7 @@
                 </div>
 
                 <!-- Non-Key Columns Section -->
-                <div class="form-row">
+                <div class="form-row2">
                     <div class="form-section-left">
                         <h3>Non-Key Columns (Debtor)</h3>
                         {{ form.debtor_non_key_columns }}
@@ -171,6 +266,34 @@
             <button type="submit">Submit</button>
         </form>
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the navigation menu and menu button
+            var nav = document.getElementById('navModel');
+            var menuBtn = document.querySelector('.menu');
+
+            // Toggle navigation menu visibility when the menu button is clicked
+            menuBtn.addEventListener('click', function (event) {
+                event.stopPropagation(); // Prevent the click event from bubbling to window
+                if (nav.style.display === 'block') {
+                    nav.style.display = 'none'; // Hide the navigation menu
+                } else {
+                    nav.style.display = 'block'; // Show the navigation menu
+                }
+            });
+
+            // Close the navigation menu when clicking outside of it
+            window.addEventListener('click', function (event) {
+                if (!event.target.closest('.topnav')) {
+                    nav.style.display = 'none'; // Hide the navigation menu
+                }
+            });
+
+
+        });
+
+    </script>
 </body>
 
 </html>
