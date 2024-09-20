@@ -17,11 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from matching import views as matching_views
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('upload.urls', namespace='upload')),
+    path('upload', include('upload.urls', namespace='upload')),
     path('matching/',include('matching.urls', namespace='matching')),
     path('', matching_views.home, name='home'),
     path('compare/',include('compare.urls', namespace= 'compare')),
-]
+    path('accounts/',include('login_signup.urls', namespace= 'authen')),
+] + static(settings.STATIC_URL)

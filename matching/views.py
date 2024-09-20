@@ -9,6 +9,7 @@ from django.urls import resolve
 from .models import DebtorExcelBase, ClaimerExcelBase, FieldPreset
 from .forms import ColumnMappingForm
 from urllib.parse import unquote
+from django.contrib.auth.decorators import login_required
 
 def get_preset_data(request):
     if request.method == 'POST' and 'preset_name' in request.POST:
@@ -117,6 +118,7 @@ def save_selected_data(request, filename):
         return render(request, 'file_not_found.html', {'error': f'File "{decoded_filename}" not found'}, status=404)
 
         return render(request, 'file_not_found.html', {'error': f'File "{decoded_filename}" not found'}, status=404)
-    
+
+@login_required    
 def home(request):
     return render(request, 'home.html')

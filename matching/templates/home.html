@@ -212,6 +212,12 @@
                         <li><a href="{% url 'home' %}">Dashboard</a></li>
                         <li><a href="{% url 'upload:upload_file' %}">Upload</a></li>
                         <li><a href="{% url 'matching:display_data' %}">Save File</a></li>
+                        <li><form method="POST" action="{% url 'matching:logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; color: black;">
+                                Logout
+                            </button>
+                        </form></li>
                     </ul>
                 </nav>
             </div>

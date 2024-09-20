@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from . import views
+from django.contrib.auth.views import LogoutView
 
 app_name = 'matching'
 
@@ -12,6 +13,7 @@ urlpatterns = [
     path('select/<path:directory>/', views.select_directory, name='select_directory'),
     path('save/<path:filename>/', views.save_selected_data, name='save_selected_data'),
     path('home/', views.home, name='home'),
+    path('logout/', LogoutView.as_view(), name ='logout'),
 ]
 
 # Serve static files during development
