@@ -85,9 +85,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': 'powerranger',
+        'PASSWORD': 'postgressu',
         'HOST': 'localhost',   # or the appropriate host where your PostgreSQL instance is running
-        'PORT': '5432',        # or the appropriate port where your PostgreSQL instance is running
+        'PORT': '5433',        # or the appropriate port where your PostgreSQL instance is running
     }
 }
 
@@ -124,8 +124,8 @@ USE_I18N = True
 USE_TZ = True
 
 #MEDIA ROOT
-MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
-MEDIA_URL = '/uploads/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # This will create a 'media' folder outside the project code
+MEDIA_URL = '/media/'
 
 
 
