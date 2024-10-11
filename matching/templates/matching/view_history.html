@@ -1,0 +1,30 @@
+<!-- matching/templates/matching/view_history.html -->
+{% extends 'base.html' %}
+
+{% block title %}View Matching History{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>View Matching History</h1>
+</div>
+<div class="table-container">
+    <table class="results-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Timestamp</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for history in matching_history %}
+            <tr>
+                <td>{{ history.id }}</td>
+                <td>{{ history.timestamp }}</td>
+                <td>{{ history.description }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

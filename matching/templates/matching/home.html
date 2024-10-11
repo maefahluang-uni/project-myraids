@@ -1,0 +1,20 @@
+<!-- matching/templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Claim and Debt Management{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Dashboard</h1>
+</div>
+<main>
+    <div class="table-container">
+        <div class="p-container">
+            <li><a href="{% url 'matching:select_files' %}">Select Files for Matching</a></li>
+            <li><a href="{% url 'matching:view_results' %}">View Matching Results</a></li>
+            <li><a href="{% url 'matching:view_matching_history' %}">View Matching History</a></li>
+            <li><a href="{% url 'matching:create_matching_preset' %}">Create Matching Preset</a></li>
+        </div>
+    </div>
+</main>
+{% endblock %}

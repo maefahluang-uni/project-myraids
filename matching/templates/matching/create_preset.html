@@ -1,0 +1,17 @@
+<!-- matching/templates/matching/create_preset.html -->
+{% extends 'base.html' %}
+
+{% block title %}Create Matching Preset{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Create Matching Preset</h1>
+</div>
+<div class="table-container">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create Preset</button>
+    </form>
+</div>
+{% endblock %}

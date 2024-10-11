@@ -1,0 +1,40 @@
+<!-- matching/templates/matching/match_result.html -->
+{% extends 'base.html' %}
+
+{% block title %}Matching Results{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Matching Results</h1>
+</div>
+<div class="table-container">
+    <table class="results-table">
+        <thead>
+            <tr>
+                <th>Debtor Main Column</th>
+                <th>Claimer Main Column</th>
+                {% if result_list %}
+                    {% for key, value in result_list.0.items %}
+                        {% if key not in ['debtor_main_column', 'claimer_main_column'] %}
+                            <th>{{ key }}</th>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in result_list %}
+            <tr>
+                <td>{{ row.debtor_main_column }}</td>
+                <td>{{ row.claimer_main_column }}</td>
+                {% for key, value in row.items %}
+                    {% if key not in ['debtor_main_column', 'claimer_main_column'] %}
+                        <td>{{ value }}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,3 +1,5 @@
+import os
+
 """
 Django settings for excel_matching project.
 
@@ -14,7 +16,7 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -39,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'upload',
+    'matching',
+    'login_signup',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +60,7 @@ ROOT_URLCONF = 'excel_matching.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,14 +82,15 @@ WSGI_APPLICATION = 'excel_matching.wsgi.application'
 # django_project/settings.py
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': 'powerranger',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'PASSWORD': 'postgressu',
+        'HOST': 'localhost',   # or the appropriate host where your PostgreSQL instance is running
+        'PORT': '5433',        # or the appropriate port where your PostgreSQL instance is running
     }
 }
+
 
 
 # Password validation
@@ -118,10 +123,25 @@ USE_I18N = True
 
 USE_TZ = True
 
+#MEDIA ROOT
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # This will create a 'media' folder outside the project code
+MEDIA_URL = '/media/'
+
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+STATIC_URL = '/static/'
+
+# Define the directories where Django will look for static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static/'),
+    os.path.join(BASE_DIR, 'matching/static/'),
+]
+
+# Define the directory where collected static files will be stored
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -129,7 +149,5 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+LOGIN_REDIRECT_URL = "matching:home"
+LOGOUT_REDIRECT_URL = "authen:login"

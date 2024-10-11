@@ -1,156 +1,31 @@
-
-<!-- upload.html -->
 {% extends 'base.html' %}
-
-
-{% block title %}Cliam and Debt Management{% endblock %}
+{% load static %}
+{% block title %}Claim and Debt Management{% endblock %}
+<link rel="stylesheet" href="{% static 'main.css' %}">
 
 {% block content %}
-<!-- topic -->
-<div class="title">
-    <p>ข้อมูลผู้ป่วย</p>
-</div>
+<main>
+    <h1>Upload File</h1>
 
-<!-- button -->
-<button id="uploadButton"><i class="fa-solid fa-upload"></i> อัพโหลดไฟล์</button>
-
-<!-- The Modal -->
-<div id="myModal" class="modal">
-    <div id="modalContent" class="modal-content">
-        <!-- Close button -->
-        <span class="close">&times;</span>
-
-        <h2>อัพโหลดไฟล์</h2>
-        <!-- File upload form -->
-        <form id="uploadForm" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.file }}
-            <br><br>
-            {{ form.location }}
-            <br><br>
-            <button type="submit">Upload</button>
-        </form>
-    </div>
-</div>
-
-
-<div class="search-bar">
-    <div>
-        <input type="text" placeholder="ค้นหา">
-        <button><i class="fa-solid fa-search"></i></button>
-    </div>
-    <div class="three-button">
-        <input type="text" id="datepicker" placeholder="Select Date">
-        <button><i class="fa-solid fa-filter"></i>กรอง</button>
-        <button><i class="fa-solid fa-pen-to-square"></i>แก้ไข</button>
-        <button><i class="fa-solid fa-trash"></i>ลบ</button>
-    </div>
-</div>
-
-
-<!-- info table -->
-<section class="data-table">
-    <table id="infoTable">
-        <thead>
-            <tr>
-                <th>ชื่อไฟล์</th>
-                <th>เวลา</th>
-                <!-- Add more table headers as needed -->
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Data 1</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <!-- Add more table data as needed -->
-            </tr>
-            <tr>
-                <td>Data 1</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <!-- Add more table data as needed -->
-            </tr>
-            <tr>
-                <td>Data 1</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <!-- Add more table data as needed -->
-            </tr>
-            <tr>
-                <td>Data 1</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <td>Data 2</td>
-                <!-- Add more table data as needed -->
-            </tr>
-        </tbody>
-    </table>
-</section>
-
-<script>
-    $(document).ready(function() {
-    var modal = document.getElementById("myModal");
-    var uploadButton = document.getElementById("uploadButton");
-    var closeBtn = document.getElementsByClassName("close")[0];
-
-    // Show modal when the uploadButton is clicked
-    uploadButton.onclick = function() {
-        modal.style.display = "block";
-    };
-
-    // Close modal when the close button (×) is clicked
-    closeBtn.onclick = function() {
-        modal.style.display = "none";
-    };
-
-    // Close modal when clicking outside the modal content
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    };
-
-    // Handle form submission
-    $('#myModal').on('submit', '#uploadForm', function(event) {
-        event.preventDefault(); // Prevent default form submission
-        var formData = new FormData(this); // Get form data
-
-        $.ajax({
-            url: '/upload/', 
-            type: 'POST',
-            data: formData,
-            processData: false, // Prevent jQuery from processing data
-            contentType: false, // Prevent jQuery from setting content type
-            success: function(response) {
-                console.log('File uploaded successfully:', response);
-                modal.style.display = "none"; // Close modal on success
-            },
-            error: function(error) {
-                console.error('Error uploading file:', error);
-            }
-        });
-    });
-
-    
-});
-
-
-</script>
-{% endblock %}
-
-    <!-- <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.file }}
-        <br><br>
-        {{ form.location }}
+        <div>
+            <label for="id_file">Choose File:</label>
+            {{ form.file }}
+        </div>
+
+        <div class="radio-group">
+            <label for="id_location">Select Location:</label>
+            {{ form.location }}
+        </div>
+
+        <div class="radio-group">
+            <label for="id_patient_type">Select Patient Type:</label>
+            {{ form.patient_type }}
+        </div>
+
         <br><br>
         <button type="submit">Upload</button>
-    </form> -->
+    </form>
+</main>
+{% endblock %}
