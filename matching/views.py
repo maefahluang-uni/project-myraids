@@ -1,124 +1,153 @@
-import os, json
-import pandas as pd
-from django.db import models
-from django.conf import settings
-from django.shortcuts import render
-from datetime import datetime
-from django.http import HttpResponseRedirect,JsonResponse
-from django.urls import resolve
-from .models import DebtorExcelBase, ClaimerExcelBase, FieldPreset
-from .forms import ColumnMappingForm
-from urllib.parse import unquote
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
+from upload.models import ExcelFile, Debtor, Claimer
+from .forms import DebtorForm, ClaimerForm, MatchingForm, PresetForm
+from .models import MatchingResult, MatchingPreset, MatchingHistory
+import pandas as pd
+from django.contrib import messages
 
-def get_preset_data(request):
-    if request.method == 'POST' and 'preset_name' in request.POST:
-        preset_name = request.POST['preset_name']
-        try:
-            # Retrieve the preset object from the database
-            preset = FieldPreset.objects.get(name=preset_name)
-            # Return the preset data as JSON response
-            return JsonResponse(preset.preset_data, safe=False)
-        except FieldPreset.DoesNotExist:
-            return JsonResponse({'error': 'Preset not found'}, status=404)
-    else:
-        return JsonResponse({'error': 'Invalid request'}, status=400)
-
-def get_preset_names(request):
-    if request.method == 'GET':
-        presets = FieldPreset.objects.all().values_list('name', flat=True)
-        return JsonResponse(list(presets), safe=False)
-    else:
-        return JsonResponse({'error': 'Invalid request'}, status=400)
-
-def display_data(request):
-    uploads_directory = os.path.join(settings.MEDIA_ROOT)
-    files = list_files(uploads_directory)
-    return render(request, 'file_list.html', {'files': files})
-
-def select_directory(request, directory):
-    uploads_directory = os.path.join(settings.MEDIA_ROOT, directory)
-    files = list_files(uploads_directory)
-    return render(request, 'select_directory.html', {'directory': directory, 'files': files})
-
-def list_files(directory):
-    files = []
-    for root, _, filenames in os.walk(directory):
-        for filename in filenames:
-            file_path = os.path.relpath(os.path.join(root, filename), settings.MEDIA_ROOT)
-            files.append(file_path)
-    return files
-
-def save_selected_data(request, filename):
-    resolved_filename = resolve(request.path_info).kwargs.get('filename')
-    decoded_filename = unquote(resolved_filename)
-    file_path = os.path.join(settings.MEDIA_ROOT, decoded_filename)
-
-    try:
-        df = pd.read_excel(file_path)
-
-        subdirectory = os.path.dirname(decoded_filename)
-
-        if subdirectory == 'debtor':
-            Model = DebtorExcelBase
-        elif subdirectory == 'claimer':
-            Model = ClaimerExcelBase
-        else:
-            return render(request, 'file_not_found.html',
-                          {'error': f'Subdirectory "{subdirectory}" not recognized'}, status=404)
-
-        excel_columns = list(df.columns)
-        model_fields = {field.name: field.verbose_name for field in Model._meta.get_fields()}
-
-        # Query FieldPreset model and retrieve the presets
-        model_field_presets = {}
-        field_presets = FieldPreset.objects.all()
-        for preset in field_presets:
-            model_field_presets[preset.name] = preset.preset_data
-
-        data_to_save = {}
-        if request.method == 'POST':
-            form = ColumnMappingForm(request.POST, excel_columns=excel_columns, model_fields=model_fields)
-            if form.is_valid():
-                preset_choice = form.cleaned_data.get('preset_choice')
-                if preset_choice:
-                    preset_data = model_field_presets.get(preset_choice, {})
-                    for excel_column, field_name in preset_data.items():
-                        data_to_save[field_name] = df[excel_column]
-                else:
-                    # If no preset is chosen, use the provided column-to-field mapping directly
-                    column_to_field_mapping = form.cleaned_data
-                    for excel_column, field_name in column_to_field_mapping.items():
-                        data_to_save[field_name] = df[excel_column]
-
-                # Save data_to_save to the respective model
-                objects_to_create = []
-                for i in range(len(data_to_save[list(data_to_save.keys())[0]])):
-                    kwargs = {}
-                    for field, data in data_to_save.items():
-                        if field in ['admit_date', 'left_date']:
-                            try:
-                                kwargs[field] = datetime.strptime(data[i], '%d/%m/%Y').strftime('%Y-%m-%d')
-                            except ValueError:
-                                return JsonResponse({'error': f'Invalid date format in column "{field}"'},
-                                                  status=400)
-                        else:
-                            kwargs[field] = data[i]
-                    objects_to_create.append(Model(**kwargs))
-
-                Model.objects.bulk_create(objects_to_create)
-
-                return render(request, 'save_data.html')
-        else:
-            form = ColumnMappingForm(excel_columns=excel_columns, model_fields=model_fields)
-
-        return render(request, 'save_data_form.html', {'form': form})
-
-    except FileNotFoundError:
-        return render(request, 'file_not_found.html', {'error': f'File "{decoded_filename}" not found'}, status=404)
-
-        return render(request, 'file_not_found.html', {'error': f'File "{decoded_filename}" not found'}, status=404)
-
-@login_required    
+@login_required
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'matching/home.html')
+
+
+@login_required
+def select_files_for_matching(request):
+    # Step 1: Select files for matching
+    if request.method == 'POST':
+        debtor_file_id = request.POST.get('debtor_file')
+        claimer_file_id = request.POST.get('claimer_file')
+
+        if debtor_file_id and claimer_file_id:
+            request.session['debtor_file_id'] = debtor_file_id
+            request.session['claimer_file_id'] = claimer_file_id
+            return redirect('select_columns_for_matching')
+    
+    debtor_files = ExcelFile.objects.filter(location='debtor')
+    claimer_files = ExcelFile.objects.filter(location='claimer')
+
+    return render(request, 'matching/select_files.html', {
+        'debtor_files': debtor_files,
+        'claimer_files': claimer_files,
+    })
+
+
+@login_required
+def select_columns_for_matching(request):
+    # Step 2: Select columns for matching
+    debtor_file_id = request.session.get('debtor_file_id')
+    claimer_file_id = request.session.get('claimer_file_id')
+
+    if not debtor_file_id or not claimer_file_id:
+        messages.error(request, "Please select files first.")
+        return redirect('select_files_for_matching')
+
+    debtor_file = get_object_or_404(ExcelFile, id=debtor_file_id)
+    claimer_file = get_object_or_404(ExcelFile, id=claimer_file_id)
+
+    if request.method == 'POST':
+        form = MatchingForm(request.POST)
+        if form.is_valid():
+            # Get selected columns for matching
+            debtor_main_column = form.cleaned_data['debtor_main_column']
+            claimer_main_column = form.cleaned_data['claimer_main_column']
+            debtor_selected_columns = form.cleaned_data['debtor_selected_columns']
+            claimer_selected_columns = form.cleaned_data['claimer_selected_columns']
+
+            try:
+                # Load data from Debtor and Claimer models
+                debtor_data = Debtor.objects.filter(ExcelFile=debtor_file).values()
+                claimer_data = Claimer.objects.filter(ExcelFile=claimer_file).values()
+
+                # Convert to DataFrames for matching
+                debtor_df = pd.DataFrame(debtor_data)
+                claimer_df = pd.DataFrame(claimer_data)
+
+                # Perform matching based on the main columns and selected columns
+                matched_data = pd.merge(
+                    debtor_df,
+                    claimer_df,
+                    left_on=debtor_main_column,
+                    right_on=claimer_main_column,
+                    suffixes=('_debtor', '_claimer')
+                )
+
+                # Filter only the selected columns for output
+                matched_columns = [
+                    f'{col}_debtor' for col in debtor_selected_columns
+                ] + [
+                    f'{col}_claimer' for col in claimer_selected_columns
+                ]
+                matched_result = matched_data[[debtor_main_column, claimer_main_column] + matched_columns]
+
+                # Convert the result to a list of dictionaries for rendering
+                result_list = matched_result.to_dict(orient='records')
+
+                # Save the matching result to the database
+                for row in result_list:
+                    MatchingResult.objects.create(
+                        debtor_file=debtor_file,
+                        claimer_file=claimer_file,
+                        main_column_value=row[debtor_main_column],
+                        matched_data=row
+                    )
+
+                return render(request, 'matching/match_result.html', {'result_list': result_list})
+            except KeyError as e:
+                messages.error(request, f"Column not found: {str(e)}. Please check your selected files and columns.")
+                return redirect('select_columns_for_matching')
+            except Exception as e:
+                messages.error(request, f"An error occurred during matching: {str(e)}")
+                return redirect('select_columns_for_matching')
+    else:
+        form = MatchingForm()
+
+    return render(request, 'matching/select_columns.html', {
+        'form': form,
+        'debtor_file': debtor_file,
+        'claimer_file': claimer_file,
+    })
+
+
+def view_matching_results(request):
+    # Fetch all saved matching results
+    matching_results = MatchingResult.objects.all()
+    return render(request, 'matching/view_results.html', {'matching_results': matching_results})
+
+
+def view_matching_history(request):
+    # Fetch all matching history records
+    matching_history = MatchingHistory.objects.all()
+    return render(request, 'matching/view_history.html', {'matching_history': matching_history})
+
+
+def create_matching_preset(request):
+    if request.method == 'POST':
+        form = PresetForm(request.POST)
+        if form.is_valid():
+            # Get selected files and main columns for the preset
+            name = form.cleaned_data['preset_name']
+            debtor_file = form.cleaned_data['debtor_file']
+            claimer_file = form.cleaned_data['claimer_file']
+            debtor_main_column = form.cleaned_data['debtor_main_column']
+            claimer_main_column = form.cleaned_data['claimer_main_column']
+            debtor_selected_columns = form.cleaned_data['debtor_selected_columns']
+            claimer_selected_columns = form.cleaned_data['claimer_selected_columns']
+
+            # Create a new MatchingPreset
+            try:
+                preset = MatchingPreset.objects.create(
+                    name=name,
+                    debtor_columns=debtor_selected_columns,
+                    claimer_columns=claimer_selected_columns
+                )
+                messages.success(request, f"Preset '{name}' created successfully.")
+            except Exception as e:
+                messages.error(request, f"An error occurred while creating the preset: {str(e)}")
+                return redirect('create_matching_preset')
+
+            return redirect('home')
+    else:
+        form = PresetForm()
+
+    return render(request, 'matching/create_preset.html', {'form': form})

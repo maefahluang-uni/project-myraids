@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'upload',
     'matching',
-    'compare',
     'login_signup',
 ]
 

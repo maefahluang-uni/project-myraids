@@ -1,15 +1,24 @@
 from django.contrib import admin
-from .models import DebtorExcelBase, ClaimerExcelBase, FieldPreset
+from matching.models import MatchingResult, MatchingPreset, MatchingHistory
 
-class DebtorExcelBaseAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in DebtorExcelBase._meta.fields]
 
-class ClaimerExcelBaseAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in ClaimerExcelBase._meta.fields]
+@admin.register(MatchingResult)
+class MatchingResultAdmin(admin.ModelAdmin):
+    list_display = ('debtor_file', 'claimer_file', 'main_column_value', 'created_at')
+    search_fields = ('main_column_value', 'debtor_file__file', 'claimer_file__file')
+    list_filter = ('created_at',)
 
-class FieldPresetAdmin(admin.ModelAdmin):
-    list_display = ('name',)  # Add other fields you want to display in the admin list view
 
-admin.site.register(DebtorExcelBase, DebtorExcelBaseAdmin)
-admin.site.register(ClaimerExcelBase, ClaimerExcelBaseAdmin)
-admin.site.register(FieldPreset, FieldPresetAdmin)
+@admin.register(MatchingPreset)
+class MatchingPresetAdmin(admin.ModelAdmin):
+    list_display = ('name', 'created_at')
+    search_fields = ('name',)
+    list_filter = ('created_at',)
+
+
+@admin.register(MatchingHistory)
+class MatchingHistoryAdmin(admin.ModelAdmin):
+    list_display = ('debtor_file', 'claimer_file', 'main_column_value', 'created_at')
+    search_fields = ('main_column_value', 'debtor_file__file', 'claimer_file__file')
+    list_filter = ('created_at', 'preset')
+

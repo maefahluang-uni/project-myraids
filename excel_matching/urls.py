@@ -22,9 +22,8 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('upload', include('upload.urls', namespace='upload')),
+    path('upload/', include('upload.urls', namespace='upload')),
     path('matching/',include('matching.urls', namespace='matching')),
-    path('', matching_views.home, name='home'),
-    path('compare/',include('compare.urls', namespace= 'compare')),
     path('accounts/',include('login_signup.urls', namespace= 'authen')),
+    path('', matching_views.home, name='home'),
 ] + static(settings.STATIC_URL)

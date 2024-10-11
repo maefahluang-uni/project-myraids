@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .forms import FileUploadForm
 from upload.models import ExcelFile, Debtor, Claimer
 import pandas as pd
+from django.contrib.auth.decorators import login_required
 
 def check_file_type(uploaded_file):
     # Check for file type
@@ -89,6 +90,7 @@ def save_excel_data(user, excel_file, excel_data, location, patient_type):
                 patient_type=patient_type
             )
 
+@login_required
 def upload_file(request):
     if request.method == 'POST':
         form = FileUploadForm(request.POST, request.FILES)

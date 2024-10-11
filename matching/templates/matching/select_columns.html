@@ -1,0 +1,40 @@
+<!-- matching/templates/matching/select_columns.html -->
+{% extends 'base.html' %}
+
+{% block title %}Select Columns for Matching{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 class="text-center mb-4">Select Columns for Matching</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group mb-4">
+            <label for="debtor_main_column" class="form-label">Select Main Column for Matching (Debtor):</label>
+            <select name="debtor_main_column" id="debtor_main_column" class="form-select">
+                {% for value, label in form.debtor_main_column.field.choices %}
+                    <option value="{{ value }}" {% if form.debtor_main_column.value == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group mb-4">
+            <label for="claimer_main_column" class="form-label">Select Main Column for Matching (Claimer):</label>
+            <select name="claimer_main_column" id="claimer_main_column" class="form-select">
+                {% for value, label in form.claimer_main_column.field.choices %}
+                    <option value="{{ value }}" {% if form.claimer_main_column.value == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group mb-4">
+            <label for="debtor_selected_columns" class="form-label">Select Columns for Matching (Debtor):</label>
+            {{ form.debtor_selected_columns }}
+        </div>
+        <div class="form-group mb-4">
+            <label for="claimer_selected_columns" class="form-label">Select Columns for Matching (Claimer):</label>
+            {{ form.claimer_selected_columns }}
+        </div>
+        <div class="text-center mt-5">
+            <button type="submit" class="btn btn-primary btn-lg w-100">Perform Matching</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
