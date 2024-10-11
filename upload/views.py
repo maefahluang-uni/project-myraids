@@ -131,3 +131,19 @@ def upload_file(request):
         form = FileUploadForm()
 
     return render(request, 'upload.html', {'form': form})
+
+def history_view(request):
+    return render(request, "history.html")
+
+def match_view(request):
+    return render(request, "match.html")
+
+def dashboard_view(request):
+    return render(request, "dashboard.html")
+
+def login_view(request):
+    return render(request, 'login.html')    
+
+def result_view(request):
+    return render(request,"result.html")
+

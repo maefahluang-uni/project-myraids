@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}Match Column - My Website{% endblock %}
+
+{% block content %}
+
+  <div class="title">
+    <p>เปรียบเทียบข้อมูล</p>
+  </div>
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'main.css' %}">
+
+<div class="headings-container">
+  <h2>ข้อมูลตั้งต้น</h2> 
+  <h2>ข้อมูลเคลม</h2>
+</div>
+
+<div class="tables-container">
+  <table class="content-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>AN</th>
+        <th>HN</th>
+        <th>CID</th>
+        <th>ชื่อผู้ป่วย</th>
+        <th>สัญชาติ</th>
+        <th>วันรับรักษา</th>
+        <th>วันจำหน่าย</th>
+        <th>สถานะ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Table data here -->
+      <tr>
+        <td>1</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+      </tr>
+      <!-- Add more rows if needed -->
+      <tr class="active-row">
+        <td>2</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+      </tr>
+      <tr class="active-row">
+        <td>4</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="content-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>AN</th>
+        <th>HN</th>
+        <th>CID</th>
+        <th>ชื่อผู้ป่วย</th>
+        <th>สัญชาติ</th>
+        <th>วันรับรักษา</th>
+        <th>วันจำหน่าย</th>
+        <th>สถานะ</th>
+      </tr>
+    </thead>
+    <tbody>
+       <!-- Table data here -->
+       <tr>
+        <td>1</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+      </tr>
+      <!-- Add more rows if needed -->
+      <tr class="active-row">
+        <td>2</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+      </tr>
+      <tr class="active-row">
+        <td>4</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+        <td>xxx</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block title %}Match Column - My Website{% endblock %}
+
+{% block content %}
+
+<div class="title">
+  <p>เปรียบเทียบข้อมูล</p>
+</div>
+{% load static %}
+<link rel="stylesheet" href="{% static 'main.css' %}">
+<link rel="stylesheet" href="css/fontawesome/css/all.css">
+
+<div class="headings-container">
+  <h2>ข้อมูลตั้งต้น</h2>
+  <h2>ข้อมูลเคลม</h2>
+</div>
+
+<div class="rectangles-container">
+  <div class="rectangle">
+    <table>
+      <thead>
+        <tr>
+          <div class="Select-container">
+            <Select class="select-box">
+              <option value="">Select Column</option>
+              <option value="first">HN</option>
+              <option value="second">CID</option>
+              <option value="third">ชื่อผู้ป่วย</option>
+              <option value="fourth">สัญชาติ</option>
+            </select>
+          </div>
+        </tr>
+        <tr>
+          <div class="Select-container">
+            <Select class="select-box">
+              <option value="">Select Column</option>
+              <option value="first">HN</option>
+              <option value="second">CID</option>
+              <option value="third">ชื่อผู้ป่วย</option>
+              <option value="fourth">สัญชาติ</option>
+            </select>
+          </div>
+        </tr>
+        <tr>
+          <div class="Select-container">
+            <Select class="select-box">
+              <option value="">Select Column</option>
+              <option value="first">HN</option>
+              <option value="second">CID</option>
+              <option value="third">ชื่อผู้ป่วย</option>
+              <option value="fourth">สัญชาติ</option>
+            </select>
+          </div>
+        </tr>
+        <tr>
+          <div class="Select-container">
+            <Select class="select-box">
+              <option value="">Select Column</option>
+              <option value="first">HN</option>
+              <option value="second">CID</option>
+              <option value="third">ชื่อผู้ป่วย</option>
+              <option value="fourth">สัญชาติ</option>
+            </select>
+          </div>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in table_data_1 %}
+        <tr>
+          <td>{{ row.column1 }}</td>
+          <td></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button class="add-button">
+      <i class="fas fa-plus"></i>
+    </button>
+  </div>
+
+  <div class="rectangle">
+    <table>
+      <thead>
+        <tr>
+          <div class="Select-container">
+            <Select class="select-box">
+              <option value="">Select Column</option>
+              <option value="first">HN</option>
+              <option value="second">CID</option>
+              <option value="third">ชื่อผู้ป่วย</option>
+              <option value="fourth">สัญชาติ</option>
+            </select>
+          </div>
+        </tr>
+        <tr>
+          <div class="Select-container">
+            <Select class="select-box">
+              <option value="">Select Column</option>
+              <option value="first">HN</option>
+              <option value="second">CID</option>
+              <option value="third">ชื่อผู้ป่วย</option>
+              <option value="fourth">สัญชาติ</option>
+            </select>
+          </div>
+        </tr>
+        <tr>
+          <div class="Select-container">
+            <Select class="select-box">
+              <option value="">Select Column</option>
+              <option value="first">HN</option>
+              <option value="second">CID</option>
+              <option value="third">ชื่อผู้ป่วย</option>
+              <option value="fourth">สัญชาติ</option>
+            </select>
+          </div>
+        </tr>
+        <tr>
+          <div class="Select-container">
+            <Select class="select-box">
+              <option value="">Select Column</option>
+              <option value="first">HN</option>
+              <option value="second">CID</option>
+              <option value="third">ชื่อผู้ป่วย</option>
+              <option value="fourth">สัญชาติ</option>
+            </select>
+          </div>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in table_data_2 %}
+        <tr>
+          <td>{{ row.column1 }}</td>
+          <td></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button class="add-button">
+      <i class="fas fa-plus fa-lg"></i>
+    </button>
+  </div>
+</div>
+
+<div class="icon-container">
+  <i class="fa-solid fa-caret-down"></i>
+</div>
+
+<div class="next-button-container">
+  <a href="{% url 'result_view' %}" ,>
+    <button class="next-button"></i>Next</button>
+  </a>
+</div>
+
+<script>
+  $(document).ready(function () {
+    // Handle click event on the add-button
+    $('.add-button').click(function () {
+      // Create a new row element
+      var newRow = $('<tr>');
+
+      // Create a new Select-container and Select element
+      var newSelectContainer = $('<div>').addClass('Select-container');
+      var newSelect = $('<select>').addClass('select-box');
+
+      // Add options to the new Select element
+      newSelect.append('<option value="">Select Column</option>');
+      newSelect.append('<option value="first">HN</option>');
+      newSelect.append('<option value="second">CID</option>');
+      newSelect.append('<option value="third">ชื่อผู้ป่วย</option>');
+      newSelect.append('<option value="fourth">สัญชาติ</option>');
+
+      // Append the new Select element to the Select-container
+      newSelectContainer.append(newSelect);
+
+      // Append the Select-container to the new row
+      newRow.append($('<td>').append(newSelectContainer));
+
+      // Append the new row to the table body
+      $('tbody').append(newRow);
+
+  });
+});
+
+</script>
+
+{% endblock %}
