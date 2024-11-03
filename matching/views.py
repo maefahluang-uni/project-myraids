@@ -1,153 +1,245 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
-from upload.models import ExcelFile, Debtor, Claimer
-from .forms import DebtorForm, ClaimerForm, MatchingForm, PresetForm
-from .models import MatchingResult, MatchingPreset, MatchingHistory
+# views.py
+
+import logging
+from django.db.models import Q
 import pandas as pd
+from django.shortcuts import render, redirect
 from django.contrib import messages
+from .forms import FileSelectionForm, ColumnSelectionForm, ColumnPairingForm
+from .models import SelectedColumns, MatchedResult
+from upload.models import ExcelFile,Debtor,Claimer
+from django.contrib.auth.decorators import login_required
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 @login_required
 def home(request):
-    return render(request, 'matching/home.html')
+    sessions = SelectedColumns.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'matching/home.html', {'sessions': sessions})
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+def get_columns_from_model(model_class):
+    return [field.name for field in model_class._meta.fields if field.name != 'id']
+
 
 
 @login_required
-def select_files_for_matching(request):
-    # Step 1: Select files for matching
+def file_selection_view(request):
     if request.method == 'POST':
-        debtor_file_id = request.POST.get('debtor_file')
-        claimer_file_id = request.POST.get('claimer_file')
+        form = FileSelectionForm(request.POST)
+        if form.is_valid():
+            # Get the selected files and save necessary details to the session
+            file1 = form.cleaned_data['excel_file_1']
+            file2 = form.cleaned_data['excel_file_2']
 
-        if debtor_file_id and claimer_file_id:
-            request.session['debtor_file_id'] = debtor_file_id
-            request.session['claimer_file_id'] = claimer_file_id
-            return redirect('select_columns_for_matching')
-    
-    debtor_files = ExcelFile.objects.filter(location='debtor')
-    claimer_files = ExcelFile.objects.filter(location='claimer')
+            # Save IDs and patient/location data in session for subsequent steps
+            request.session['file1_id'] = file1.id
+            request.session['file2_id'] = file2.id
+            request.session['patient_type_1'] = file1.patient_type
+            request.session['location_1'] = file1.location
+            request.session['patient_type_2'] = file2.patient_type
+            request.session['location_2'] = file2.location
 
-    return render(request, 'matching/select_files.html', {
-        'debtor_files': debtor_files,
-        'claimer_files': claimer_files,
-    })
-
+            return redirect('matching:column_selection')
+    else:
+        form = FileSelectionForm()
+    return render(request, 'matching/file_selection.html', {'form': form})
 
 @login_required
-def select_columns_for_matching(request):
-    # Step 2: Select columns for matching
-    debtor_file_id = request.session.get('debtor_file_id')
-    claimer_file_id = request.session.get('claimer_file_id')
+def column_selection_view(request):
+    # Retrieve file IDs from session
+    file1_id = request.session.get('file1_id')
+    file2_id = request.session.get('file2_id')
 
-    if not debtor_file_id or not claimer_file_id:
+    # Check if both files are selected
+    if not file1_id or not file2_id:
         messages.error(request, "Please select files first.")
-        return redirect('select_files_for_matching')
+        return redirect('matching:file_selection')
 
-    debtor_file = get_object_or_404(ExcelFile, id=debtor_file_id)
-    claimer_file = get_object_or_404(ExcelFile, id=claimer_file_id)
+    # Retrieve the ExcelFile instances
+    file1 = ExcelFile.objects.get(id=file1_id)
+    file2 = ExcelFile.objects.get(id=file2_id)
 
+    # Determine columns for each file without patient type or location dependency
+    file1_columns = get_columns_from_model(Debtor if file1.debtors.exists() else Claimer)
+    file2_columns = get_columns_from_model(Debtor if file2.debtors.exists() else Claimer)
+
+    # Handle POST request
     if request.method == 'POST':
-        form = MatchingForm(request.POST)
+        form = ColumnSelectionForm(request.POST, file1_columns=file1_columns, file2_columns=file2_columns)
         if form.is_valid():
-            # Get selected columns for matching
-            debtor_main_column = form.cleaned_data['debtor_main_column']
-            claimer_main_column = form.cleaned_data['claimer_main_column']
-            debtor_selected_columns = form.cleaned_data['debtor_selected_columns']
-            claimer_selected_columns = form.cleaned_data['claimer_selected_columns']
-
-            try:
-                # Load data from Debtor and Claimer models
-                debtor_data = Debtor.objects.filter(ExcelFile=debtor_file).values()
-                claimer_data = Claimer.objects.filter(ExcelFile=claimer_file).values()
-
-                # Convert to DataFrames for matching
-                debtor_df = pd.DataFrame(debtor_data)
-                claimer_df = pd.DataFrame(claimer_data)
-
-                # Perform matching based on the main columns and selected columns
-                matched_data = pd.merge(
-                    debtor_df,
-                    claimer_df,
-                    left_on=debtor_main_column,
-                    right_on=claimer_main_column,
-                    suffixes=('_debtor', '_claimer')
-                )
-
-                # Filter only the selected columns for output
-                matched_columns = [
-                    f'{col}_debtor' for col in debtor_selected_columns
-                ] + [
-                    f'{col}_claimer' for col in claimer_selected_columns
-                ]
-                matched_result = matched_data[[debtor_main_column, claimer_main_column] + matched_columns]
-
-                # Convert the result to a list of dictionaries for rendering
-                result_list = matched_result.to_dict(orient='records')
-
-                # Save the matching result to the database
-                for row in result_list:
-                    MatchingResult.objects.create(
-                        debtor_file=debtor_file,
-                        claimer_file=claimer_file,
-                        main_column_value=row[debtor_main_column],
-                        matched_data=row
-                    )
-
-                return render(request, 'matching/match_result.html', {'result_list': result_list})
-            except KeyError as e:
-                messages.error(request, f"Column not found: {str(e)}. Please check your selected files and columns.")
-                return redirect('select_columns_for_matching')
-            except Exception as e:
-                messages.error(request, f"An error occurred during matching: {str(e)}")
-                return redirect('select_columns_for_matching')
+            # Store selected columns in session for later steps
+            request.session['columns_file1'] = form.cleaned_data['columns_file1']
+            request.session['columns_file2'] = form.cleaned_data['columns_file2']
+            request.session['common_column'] = form.cleaned_data['common_column']
+            return redirect('matching:column_pairing')
     else:
-        form = MatchingForm()
+        # Initialize form with columns from each file
+        form = ColumnSelectionForm(file1_columns=file1_columns, file2_columns=file2_columns)
 
-    return render(request, 'matching/select_columns.html', {
+    return render(request, 'matching/column_selection.html', {
         'form': form,
-        'debtor_file': debtor_file,
-        'claimer_file': claimer_file,
+        'file1': file1,
+        'file2': file2
     })
 
+@login_required
+def column_pairing_view(request):
+    selected_columns_file1 = request.session.get('columns_file1')
+    selected_columns_file2 = request.session.get('columns_file2')
 
-def view_matching_results(request):
-    # Fetch all saved matching results
-    matching_results = MatchingResult.objects.all()
-    return render(request, 'matching/view_results.html', {'matching_results': matching_results})
+    if not selected_columns_file1 or not selected_columns_file2:
+        messages.error(request, "Please complete the column selection step first.")
+        logger.debug("Column selection data missing; redirecting to column selection.")
+        return redirect('matching:column_selection')
 
-
-def view_matching_history(request):
-    # Fetch all matching history records
-    matching_history = MatchingHistory.objects.all()
-    return render(request, 'matching/view_history.html', {'matching_history': matching_history})
-
-
-def create_matching_preset(request):
     if request.method == 'POST':
-        form = PresetForm(request.POST)
+        form = ColumnPairingForm(request.POST, columns_file1=selected_columns_file1, columns_file2=selected_columns_file2)
         if form.is_valid():
-            # Get selected files and main columns for the preset
-            name = form.cleaned_data['preset_name']
-            debtor_file = form.cleaned_data['debtor_file']
-            claimer_file = form.cleaned_data['claimer_file']
-            debtor_main_column = form.cleaned_data['debtor_main_column']
-            claimer_main_column = form.cleaned_data['claimer_main_column']
-            debtor_selected_columns = form.cleaned_data['debtor_selected_columns']
-            claimer_selected_columns = form.cleaned_data['claimer_selected_columns']
-
-            # Create a new MatchingPreset
-            try:
-                preset = MatchingPreset.objects.create(
-                    name=name,
-                    debtor_columns=debtor_selected_columns,
-                    claimer_columns=claimer_selected_columns
-                )
-                messages.success(request, f"Preset '{name}' created successfully.")
-            except Exception as e:
-                messages.error(request, f"An error occurred while creating the preset: {str(e)}")
-                return redirect('create_matching_preset')
-
-            return redirect('home')
+            column_pairs = {
+                col1: form.cleaned_data[f"pair_{col1}"]
+                for col1 in selected_columns_file1
+                if form.cleaned_data.get(f"pair_{col1}")
+            }
+            request.session['column_pairs'] = column_pairs
+            request.session.modified = True  # Ensure session persistence
+            logger.debug(f"Column pairs saved to session: {column_pairs}")
+            return redirect('matching:match_results')
     else:
-        form = PresetForm()
+        form = ColumnPairingForm(columns_file1=selected_columns_file1, columns_file2=selected_columns_file2)
 
-    return render(request, 'matching/create_preset.html', {'form': form})
+    return render(request, 'matching/column_pairing.html', {'form': form})
+
+
+@login_required
+def match_results_view(request):
+    # Retrieve session data for files and columns
+    file1_id = request.session.get('file1_id')
+    file2_id = request.session.get('file2_id')
+    common_column = request.session.get('common_column')
+    column_pairs = request.session.get('column_pairs')
+
+    logger.debug(f"Session data in match_results_view: file1_id={file1_id}, file2_id={file2_id}, "
+                 f"common_column={common_column}, column_pairs={column_pairs}")
+
+    if not all([file1_id, file2_id, common_column, column_pairs]):
+        messages.error(request, "Required data is missing. Please complete all steps.")
+        logger.debug("Missing session data in match_results_view, redirecting to column selection.")
+        return redirect('matching:column_selection')
+    file1_columns = list(column_pairs.keys())
+    file2_columns = list(column_pairs.values())
+    
+    try:
+        # Retrieve ExcelFile instances
+        file1 = ExcelFile.objects.get(id=file1_id)
+        file2 = ExcelFile.objects.get(id=file2_id)
+
+        # Retrieve data based on the Debtor or Claimer associations
+        file1_data = file1.debtors.values(*file1_columns) if file1.debtors.exists() else file1.claimers.values(*file1_columns)
+        file2_data = file2.debtors.values(*file2_columns) if file2.debtors.exists() else file2.claimers.values(*file2_columns)
+
+        # Convert data to DataFrames and rename columns for merging
+        df1 = pd.DataFrame(file1_data).rename(columns=column_pairs)
+        df1['file_source'] = 'file1'
+        df2 = pd.DataFrame(file2_data)
+        df2['file_source'] = 'file2'
+
+        # Ensure the common column exists in both DataFrames
+        if common_column not in df1.columns or common_column not in df2.columns:
+            messages.error(request, f"Common column '{common_column}' not found in both files.")
+            logger.debug(f"Common column '{common_column}' missing in one or both DataFrames.")
+            return redirect('matching:column_selection')
+
+        # Merge DataFrames on the common column
+        merged_df = pd.merge(df1, df2, on=common_column, how='outer', indicator=True)
+        
+        # Log information about the merge result for debugging
+        logger.debug(f"Merged DataFrame:\n{merged_df}")
+
+        # Save session details in SelectedColumns
+        session = SelectedColumns.objects.create(
+            user=request.user,
+            excel_file_1=file1,
+            excel_file_2=file2,
+            common_column=common_column,
+            columns_file1=file1_columns,
+            columns_file2=file2_columns
+        )
+        logger.debug(f"SelectedColumns session created with ID {session.id}")
+
+        # Clear any previous matched results for this session
+        MatchedResult.objects.filter(session=session).delete()
+
+        # Save each matched result in MatchedResult model
+        for _, row in merged_df.iterrows():
+            common_value = row[common_column]
+            file_source = row['file_source']
+            column_data = {col: row[col] for col in column_pairs.keys() if col in row}
+
+            # Save individual matched result
+            matched_result = MatchedResult.objects.create(
+                user=request.user,
+                session=session,
+                common_value=common_value,
+                file_source=file_source,
+                column_data=column_data
+            )
+            logger.debug(f"MatchedResult created with ID {matched_result.id} for common value '{common_value}'")
+
+        # Redirect to a separate view for displaying the results
+        return redirect('matching:display_results', session_id=session.id)
+
+    except ExcelFile.DoesNotExist:
+        messages.error(request, "One or both selected files could not be found.")
+        logger.debug("ExcelFile not found in match_results_view.")
+        return redirect('matching:file_selection')
+    except ValueError as e:
+        messages.error(request, str(e))
+        logger.debug(f"ValueError: {str(e)}")
+        return redirect('matching:file_selection')
+    except Exception as e:
+        messages.error(request, f"An error occurred while processing the files: {str(e)}")
+        logger.debug(f"Unexpected error in match_results_view: {str(e)}")
+        return redirect('matching:file_selection')
+    
+
+
+@login_required
+def display_results(request, session_id):
+    try:
+        # Retrieve the session and associated matched results
+        session = SelectedColumns.objects.get(id=session_id, user=request.user)
+        matched_results = MatchedResult.objects.filter(session=session).order_by('common_value', 'file_source')
+
+        # Log matched results to confirm data
+        logger.debug(f"Displaying results for session {session_id}, matched results count: {matched_results.count()}")
+
+        # Organize data for display
+        display_data = {}
+        for result in matched_results:
+            common_val = result.common_value
+            if common_val not in display_data:
+                display_data[common_val] = {"file1": {}, "file2": {}}
+            display_data[common_val][result.file_source] = result.column_data
+
+        # Render results to the template
+        return render(request, 'matching/match_results.html', {
+            'display_data': display_data,
+            'common_column': session.common_column
+        })
+
+    except SelectedColumns.DoesNotExist:
+        messages.error(request, "The selected session could not be found.")
+        logger.debug("SelectedColumns session not found in display_results.")
+        return redirect('matching:home')
+    except Exception as e:
+        messages.error(request, f"An error occurred while displaying results: {str(e)}")
+        logger.debug(f"Unexpected error in display_results: {str(e)}")
+        return redirect('matching:home')
+
+

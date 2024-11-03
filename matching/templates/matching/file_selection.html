@@ -1,0 +1,20 @@
+<!-- matching/templates/matching/file_selection.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Select Files{% endblock %}
+
+{% block content %}
+<div class="file-selection-container">
+    <h2>Select Files for Comparison</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-submit">Next: Select Columns</button>
+    </form>
+    <a href="{% url 'matching:home' %}" class="btn-back">Cancel</a>
+</div>
+{% endblock %}
+
+<!-- Link to external CSS -->
+<link rel="stylesheet" href="{% static 'css/file_selection.css' %}">

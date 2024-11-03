@@ -1,5 +1,6 @@
 <!-- base.html -->
- {% load static %}
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,135 +10,6 @@
     <title>{% block title %}Claim and Debt Management{% endblock %}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Quicksand:wght@300..700&display=swap">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            font-family: "Inter", sans-serif;
-            box-sizing: border-box;
-            list-style: none;
-            text-decoration: none;
-        }
-
-        body {
-            background-color: #F4FAFD;
-        }
-
-        header {
-            background-color: #fff;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .menu {
-            font-size: 36px;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 10px;
-        }
-
-        .menu:hover {
-            background-color: #bbdff5;
-        }
-
-        .nav {
-            background-color: #fff;
-            width: 200px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: -200px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 20px;
-            z-index: 999;
-            transition: left 0.3s ease;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .logo-container {
-            margin-bottom: 20px;
-        }
-
-        .nav ul {
-            width: 100%;
-            text-align: center;
-        }
-
-        .nav li {
-            padding: 10px;
-        }
-
-        .nav a {
-            color: black;
-            display: block;
-            padding: 7px;
-            border-radius: 10px;
-        }
-
-        .nav a:hover {
-            background-color: #bbdff5;
-        }
-
-        .dashboard-header {
-            text-align: center;
-            margin: 40px 0;
-        }
-
-        .table-container {
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f4f4f4;
-        }
-
-        .status-green {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .status-yellow {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-
-        .status-red {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-    </style>
 </head>
 
 <body>
@@ -157,7 +29,7 @@
         <ul>
             <li><a href="{% url 'matching:home' %}">Dashboard</a></li>
             <li><a href="{% url 'upload:upload_file' %}">Upload</a></li>
-            <li><a href="{% url 'matching:select_files' %}">Save File</a></li>
+            <li><a href="{% url 'matching:file_selection' %}">Save File</a></li>
             <li>
                 <form method="POST" action="{% url 'matching:logout' %}">
                     {% csrf_token %}
@@ -184,11 +56,13 @@
             const nav = document.getElementById('navModel');
             const menuBtn = document.getElementById('menuBtn');
 
+            // Toggle nav menu without eval or unsafe string evaluation
             menuBtn.addEventListener('click', function (event) {
                 event.stopPropagation();
                 nav.style.left = nav.style.left === '0px' ? '-200px' : '0px';
             });
 
+            // Close nav when clicking outside
             window.addEventListener('click', function (event) {
                 if (!event.target.closest('.nav') && nav.style.left === '0px') {
                     nav.style.left = '-200px';

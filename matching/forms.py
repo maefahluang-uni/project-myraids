@@ -1,81 +1,78 @@
+# forms.py
+
 from django import forms
-from upload.models import ExcelFile, Debtor, Claimer
+from upload.models import ExcelFile
+from upload.forms import LOCATION_CHOICES, PATIENT_TYPE_CHOICES
 
 
-class DebtorForm(forms.Form):
-    debtor_file = forms.ModelChoiceField(queryset=ExcelFile.objects.filter(location='debtor'), label="Select Debtor File")
-    main_column = forms.ChoiceField(label="Main Column for Matching (Debtor)", choices=[], widget=forms.Select)
-    selected_columns = forms.MultipleChoiceField(label="Select Columns for Matching (Debtor)", choices=[], widget=forms.CheckboxSelectMultiple)
+class FileSelectionForm(forms.Form):
+    """
+    Step 1: Form for selecting two Excel files from a list.
+    """
+    excel_file_1 = forms.ModelChoiceField(queryset=ExcelFile.objects.all(), label="Select First Excel File")
+    excel_file_2 = forms.ModelChoiceField(queryset=ExcelFile.objects.all(), label="Select Second Excel File")
 
-    def __init__(self, *args, **kwargs):
-        super(DebtorForm, self).__init__(*args, **kwargs)
-        # Dynamic choices for debtor columns based on Debtor model fields
-        debtor_fields = [(field.name, f"Debtor: {field.verbose_name}") for field in Debtor._meta.get_fields() if field.name not in ['id', 'user', 'ExcelFile']]
-        self.fields['main_column'].choices = debtor_fields
-        self.fields['selected_columns'].choices = debtor_fields
+    def clean(self):
+        """
+        Ensure that two different files are selected.
+        """
+        cleaned_data = super().clean()
+        file1 = cleaned_data.get('excel_file_1')
+        file2 = cleaned_data.get('excel_file_2')
 
-
-class ClaimerForm(forms.Form):
-    claimer_file = forms.ModelChoiceField(queryset=ExcelFile.objects.filter(location='claimer'), label="Select Claimer File")
-    main_column = forms.ChoiceField(label="Main Column for Matching (Claimer)", choices=[], widget=forms.Select)
-    selected_columns = forms.MultipleChoiceField(label="Select Columns for Matching (Claimer)", choices=[], widget=forms.CheckboxSelectMultiple)
-
-    def __init__(self, *args, **kwargs):
-        super(ClaimerForm, self).__init__(*args, **kwargs)
-        # Dynamic choices for claimer columns based on Claimer model fields
-        claimer_fields = [(field.name, f"Claimer: {field.verbose_name}") for field in Claimer._meta.get_fields() if field.name not in ['id', 'user', 'ExcelFile']]
-        self.fields['main_column'].choices = claimer_fields
-        self.fields['selected_columns'].choices = claimer_fields
-
-
-class MatchingForm(forms.Form):
-    debtor_main_column = forms.ChoiceField(label="Main Column for Matching (Debtor)", choices=[], widget=forms.Select)
-    claimer_main_column = forms.ChoiceField(label="Main Column for Matching (Claimer)", choices=[], widget=forms.Select)
-    debtor_selected_columns = forms.MultipleChoiceField(label="Select Columns for Matching (Debtor)", choices=[], widget=forms.CheckboxSelectMultiple)
-    claimer_selected_columns = forms.MultipleChoiceField(label="Select Columns for Matching (Claimer)", choices=[], widget=forms.CheckboxSelectMultiple)
-
-    def __init__(self, *args, **kwargs):
-        super(MatchingForm, self).__init__(*args, **kwargs)
-        # Dynamic choices for debtor and claimer columns based on respective model fields
-        debtor_fields = [(field.name, f"Debtor: {field.verbose_name}") for field in Debtor._meta.get_fields() if field.name not in ['id', 'user', 'ExcelFile']]
-        claimer_fields = [(field.name, f"Claimer: {field.verbose_name}") for field in Claimer._meta.get_fields() if field.name not in ['id', 'user', 'ExcelFile']]
+        if file1 == file2:
+            raise forms.ValidationError("Please select two different files.")
         
-        self.fields['debtor_main_column'].choices = debtor_fields
-        self.fields['claimer_main_column'].choices = claimer_fields
-        self.fields['debtor_selected_columns'].choices = debtor_fields
-        self.fields['claimer_selected_columns'].choices = claimer_fields
+        return cleaned_data
 
-
-class PresetForm(forms.Form):
-    preset_name = forms.CharField(label="Preset Name", max_length=100, widget=forms.TextInput(attrs={
-        'id': 'preset_name',
-    }))
-    debtor_file = forms.ModelChoiceField(queryset=ExcelFile.objects.filter(location='debtor'), label="Select Debtor File", widget=forms.Select(attrs={
-        'id': 'debtor_file',
-    }))
-    claimer_file = forms.ModelChoiceField(queryset=ExcelFile.objects.filter(location='claimer'), label="Select Claimer File", widget=forms.Select(attrs={
-        'id': 'claimer_file',
-    }))
-    debtor_main_column = forms.ChoiceField(label="Main Column for Matching (Debtor)", choices=[], widget=forms.Select(attrs={
-        'id': 'debtor_main_column',
-    }))
-    claimer_main_column = forms.ChoiceField(label="Main Column for Matching (Claimer)", choices=[], widget=forms.Select(attrs={
-        'id': 'claimer_main_column',
-    }))
-    debtor_selected_columns = forms.MultipleChoiceField(label="Select Columns for Matching (Debtor)", choices=[], widget=forms.CheckboxSelectMultiple(attrs={
-        'id': 'debtor_selected_columns',
-    }))
-    claimer_selected_columns = forms.MultipleChoiceField(label="Select Columns for Matching (Claimer)", choices=[], widget=forms.CheckboxSelectMultiple(attrs={
-        'id': 'claimer_selected_columns',
-    }))
+class ColumnSelectionForm(forms.Form):
+    """
+    Step 2: Form for selecting the common column and specific columns from each file.
+    """
+    common_column = forms.ChoiceField(label="Select Common Column")
+    columns_file1 = forms.MultipleChoiceField(
+        label="Columns from First File",
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
+    columns_file2 = forms.MultipleChoiceField(
+        label="Columns from Second File",
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
 
     def __init__(self, *args, **kwargs):
-        super(PresetForm, self).__init__(*args, **kwargs)
-        # Dynamic choices for debtor and claimer columns based on respective model fields
-        debtor_fields = [(field.name, f"Debtor: {field.verbose_name}") for field in Debtor._meta.get_fields() if field.name not in ['id', 'user', 'ExcelFile']]
-        claimer_fields = [(field.name, f"Claimer: {field.verbose_name}") for field in Claimer._meta.get_fields() if field.name not in ['id', 'user', 'ExcelFile']]
+        """
+        Dynamically populate choices for columns and exclude the common column from 
+        the specific column selection options.
+        """
+        file1_columns = kwargs.pop('file1_columns', [])
+        file2_columns = kwargs.pop('file2_columns', [])
+        super().__init__(*args, **kwargs)
+
+        # Populate common column choices with columns available in both files
+        common_columns = [col for col in file1_columns if col in file2_columns]
+        self.fields['common_column'].choices = [(col, col) for col in common_columns]
         
-        self.fields['debtor_main_column'].choices = debtor_fields
-        self.fields['claimer_main_column'].choices = claimer_fields
-        self.fields['debtor_selected_columns'].choices = debtor_fields
-        self.fields['claimer_selected_columns'].choices = claimer_fields
+        # Exclude the common column from the specific columns
+        self.fields['columns_file1'].choices = [(col, col) for col in file1_columns if col not in common_columns]
+        self.fields['columns_file2'].choices = [(col, col) for col in file2_columns if col not in common_columns]
+
+
+class ColumnPairingForm(forms.Form):
+    """
+    Step 3: Form for pairing columns from the selected columns of each file.
+    Uses dropdowns for each column in File 1 to select a corresponding column from File 2.
+    """
+    def __init__(self, *args, **kwargs):
+        columns_file1 = kwargs.pop('columns_file1', [])
+        columns_file2 = kwargs.pop('columns_file2', [])
+        super().__init__(*args, **kwargs)
+
+        # Populate dropdown fields for each column in File 1, with choices from columns in File 2
+        for col1 in columns_file1:
+            self.fields[f"pair_{col1}"] = forms.ChoiceField(
+                label=f"Pair for '{col1}'",
+                choices=[(col2, col2) for col2 in columns_file2],
+                required=False
+            )

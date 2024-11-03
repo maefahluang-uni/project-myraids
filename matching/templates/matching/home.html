@@ -8,13 +8,49 @@
     <h1>Dashboard</h1>
 </div>
 <main>
-    <div class="table-container">
-        <div class="p-container">
-            <li><a href="{% url 'matching:select_files' %}">Select Files for Matching</a></li>
-            <li><a href="{% url 'matching:view_results' %}">View Matching Results</a></li>
-            <li><a href="{% url 'matching:view_matching_history' %}">View Matching History</a></li>
-            <li><a href="{% url 'matching:create_matching_preset' %}">Create Matching Preset</a></li>
-        </div>
+    <div class="actions">
+        <h2>Actions</h2>
+        <ul>
+            <!-- Link to start a new comparison session -->
+            <li><a href="{% url 'matching:file_selection' %}">Start New Comparison</a></li>
+        </ul>
+    </div>
+
+    <div class="sessions">
+        <h2>Past Comparison Sessions</h2>
+        {% if sessions %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>User</th>
+                            <th>File 1</th>
+                            <th>File 2</th>
+                            <th>Common Column</th>
+                            <th>Created At</th>
+                            <th>View Results</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                            <tr>
+                                <td>{{ session.id }}</td>
+                                <td>{{ session.user.username }}</td>
+                                <td>{{ session.excel_file_1 }}</td>
+                                <td>{{ session.excel_file_2 }}</td>
+                                <td>{{ session.common_column }}</td>
+                                <td>{{ session.created_at|date:"Y-m-d H:i" }}</td>
+                                <!-- Link to view results of this session, passing the session ID -->
+                                <td><a href="{% url 'matching:match_results' %}?session_id={{ session.id }}">View Results</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No past comparison sessions found.</p>
+        {% endif %}
     </div>
 </main>
 {% endblock %}

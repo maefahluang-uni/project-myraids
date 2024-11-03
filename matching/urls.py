@@ -1,4 +1,5 @@
-# matching/urls.py
+# urls.py
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
@@ -8,11 +9,26 @@ from django.contrib.auth.views import LogoutView
 app_name = 'matching'
 
 urlpatterns = [
-    path('home/', views.home, name='home'),
+    # Logout path
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('select_files/', views.select_files_for_matching, name='select_files'),
-    path('select_columns/', views.select_columns_for_matching, name='select_columns'),
-    path('view_results/', views.view_matching_results, name='view_results'),
-    path('view_history/', views.view_matching_history, name='view_matching_history'),
-    path('create_preset/', views.create_matching_preset, name='create_matching_preset'),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+    # Home view to display matching sessions
+    path('home/', views.home, name='home'),
+
+    # Step 1: File and patient selection
+    path('select-files/', views.file_selection_view, name='file_selection'),
+
+    # Step 2: Column selection
+    path('select-columns/', views.column_selection_view, name='column_selection'),
+
+    # Step 3: Column pairing
+    path('pair-columns/', views.column_pairing_view, name='column_pairing'),
+
+    # Step 4: View match results
+    path('results/', views.match_results_view, name='match_results'),
+
+    path('results/<int:session_id>/', views.display_results, name='display_results'),
+]
+
+# Serve static files in development
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

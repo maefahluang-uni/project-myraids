@@ -40,9 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'upload',
+    'upload.apps.UploadConfig',
     'matching',
     'login_signup',
+
 ]
 
 MIDDLEWARE = [
@@ -124,8 +125,9 @@ USE_I18N = True
 USE_TZ = True
 
 #MEDIA ROOT
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # This will create a 'media' folder outside the project code
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # This will create a 'media' folder outside the project code
+
 
 
 
@@ -151,3 +153,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = "matching:home"
 LOGOUT_REDIRECT_URL = "authen:login"
+
+
+# Use database sessions for persistence
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+# Optional: Extend session expiration time
+SESSION_COOKIE_AGE = 1209600  # 2 weeks, in seconds
+SESSION_SAVE_EVERY_REQUEST = True  # Save session on every request to avoid session data loss

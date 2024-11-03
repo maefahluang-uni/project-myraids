@@ -7,7 +7,7 @@ LOCATION_CHOICES = [
         ('claimer','Claimer'),
     ]
 
-PATEINT_TYPE_CHOICES = [
+PATIENT_TYPE_CHOICES = [
         ('inpatient','Inpatient'),
         ('outpatient','Outpatient'),
     ]
@@ -15,5 +15,5 @@ PATEINT_TYPE_CHOICES = [
 class FileUploadForm(forms.Form):
     file = forms.FileField(label='Choose file:')
     location = forms.ChoiceField(choices=LOCATION_CHOICES, widget=forms.RadioSelect)
-    patient_type = forms.ChoiceField(choices=PATEINT_TYPE_CHOICES, widget=forms.RadioSelect)
+    patient_type = forms.ChoiceField(choices=PATIENT_TYPE_CHOICES, widget=forms.RadioSelect)
 

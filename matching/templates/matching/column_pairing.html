@@ -1,0 +1,20 @@
+<!-- matching/templates/matching/column_pairing.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pair Columns{% endblock %}
+
+{% block content %}
+<div class="column-pairing-container">
+    <h2>Pair Columns for Comparison</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-submit">Next: View Results</button>
+    </form>
+    <a href="{% url 'matching:home' %}" class="btn-back">Cancel</a>
+</div>
+{% endblock %}
+
+<!-- Link to external CSS -->
+<link rel="stylesheet" href="{% static 'css/column_pairing.css' %}">
