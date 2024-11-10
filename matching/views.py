@@ -5,11 +5,41 @@ from .forms import DebtorForm, ClaimerForm, MatchingForm, PresetForm
 from .models import MatchingResult, MatchingPreset, MatchingHistory
 import pandas as pd
 from django.contrib import messages
+from django.contrib.auth.models import User
+from collections import Counter
+import datetime
+from django.db import models
+
 
 @login_required
 def home(request):
-    return render(request, 'matching/home.html')
+    # Use distinct to count unique ExcelFile records associated with debtors and claimers
+    total_debtors = Debtor.objects.values('ExcelFile').distinct().count()
+    total_claimers = Claimer.objects.values('ExcelFile').distinct().count()
+    total_users = User.objects.count()
+    total_uploaded_files = ExcelFile.objects.count()
 
+    total_matching_results = MatchingResult.objects.count()
+
+    uploaded_files_by_month = (
+        MatchingResult.objects
+        .extra(select={'month': "EXTRACT(MONTH FROM created_at)"})
+        .values('month')
+        .annotate(count=models.Count('id'))
+    )
+    
+    # Create a dictionary for month and count
+    uploaded_files_by_month_dict = {entry['month']: entry['count'] for entry in uploaded_files_by_month}
+
+    context = {
+        'total_debtors': total_debtors,
+        'total_claimers': total_claimers,
+        'total_users': total_users,
+        'total_uploaded_files': total_uploaded_files,
+        'total_matching_results': total_matching_results,
+        'uploaded_files_by_month': uploaded_files_by_month_dict,
+    }
+    return render(request, 'matching/home.html', context)
 
 @login_required
 def select_files_for_matching(request):

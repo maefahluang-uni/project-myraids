@@ -1,31 +1,137 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Claim and Debt Management{% endblock %}
-<link rel="stylesheet" href="{% static 'main.css' %}">
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+
 <main>
-    <h1>Upload File</h1>
+    <div class="dashboard-header">
+        <h1>Outpatient</h1>
+    </div>
+    
+    <div class="table-container">
+        <!-- Upload button -->
+        <button id="uploadButton" class="openBtn">Upload</button>
+        <form method="post" class="form-row">
+            {% csrf_token %}
+            <label for="debtor_file" class="form-label1">Select Debtor File:</label>
+            <select name="debtor_file" id="debtor_file" class="form-select-debt form-select-lg" style="height: 3.5rem;">
+                {% if debtor_files %}
+                    {% for file in debtor_files %}
+                        <option value="{{ file.id }}">{{ file.file.name }}</option>
+                    {% endfor %}
+                {% else %}
+                    <option value="">No Debtor Files Available</option>
+                {% endif %}
+            </select>
+                <label for="claimer_file" class="form-label2">Select Claimer File:</label>
+                    <select name="claimer_file" id="claimer_file" class="form-select-claim form-select-lg" style="height: 3.5rem;">
+                        {% if claimer_files %}
+                            {% for file in claimer_files %}
+                                <option value="{{ file.id }}">{{ file.file.name }}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="">No Claimer Files Available</option>
+                        {% endif %}
+                    </select>
+            <div class="text-center mt-5">
+                <button type="submit" class="btn btn-primary btn-lg w-100">Proceed</button>
+            </div>
+        </form>
+        
+        <!-- Upload Pop-up Card -->
+        <div id="popupCard" class="popup-card" style="display: none;">
+            <div class="popup-content">
+                <span class="close-button" id="closeButton">&times;</span>
+                <h2>Upload Your File</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="choose-file">
+                        <label for="id_file">Choose File:</label>
+                        {{ form.file }}
+                    </div>
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div>
-            <label for="id_file">Choose File:</label>
-            {{ form.file }}
+                    <div class="file-location">
+                        <label for="id_location">Select Location:</label>
+                        {{ form.location }}
+                    </div>
+
+                    <div class="file-type">
+                        <label for="id_patient_type">Select Patient Type:</label>
+                        {{ form.patient_type }}
+                    </div>
+
+                    <br>
+                    <button type="submit">Upload</button>
+                </form>
+            </div>
         </div>
-
-        <div class="radio-group">
-            <label for="id_location">Select Location:</label>
-            {{ form.location }}
-        </div>
-
-        <div class="radio-group">
-            <label for="id_patient_type">Select Patient Type:</label>
-            {{ form.patient_type }}
-        </div>
-
-        <br><br>
-        <button type="submit">Upload</button>
-    </form>
+        <table border="1" class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th> <!-- To differentiate between Debtor and Claimer -->
+                    <th>No</th>
+                    <th>VN</th>
+                    <th>HN</th>
+                    <th>CID</th>
+                    <th>Patient Name</th>
+                    <th>Sex</th>
+                    <th>Age</th>
+                    <th>National</th>
+                    <th>Vstdate</th>
+                    <th>Vsttime</th>
+                    <th>Doctor Name</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in file_data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td> <!-- Use loop counter for ID -->
+                    <td>{% if data.user %}Debtor{% else %}Claimer{% endif %}</td> <!-- Type identifier -->
+                    <td>{{ data.No }}</td>
+                    <td>{{ data.VN }}</td>
+                    <td>{{ data.HN }}</td>
+                    <td>{{ data.CID }}</td>
+                    <td>{{ data.PatientName }}</td>
+                    <td>{{ data.sex }}</td>
+                    <td>{{ data.age }}</td>
+                    <td>{{ data.National }}</td>
+                    <td>{{ data.vstdate }}</td>
+                    <td>{{ data.vsttime }}</td>
+                    <td>{{ data.DoctorName }}</td>
+                    <!-- Add more columns as needed -->
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="13">No data available.</td> <!-- Adjust based on the number of columns -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
 </main>
+
+<script>
+    document.getElementById('uploadButton').addEventListener('click', function () {
+        document.getElementById('popupCard').style.display = 'block'; // Show the upload pop-up
+    });
+
+    document.getElementById('closeButton').addEventListener('click', function () {
+        document.getElementById('popupCard').style.display = 'none'; // Close the upload pop-up
+    });
+
+    // Close the upload pop-up when clicking outside of the content
+    window.addEventListener('click', function (event) {
+        const popupCard = document.getElementById('popupCard');
+        if (event.target === popupCard) {
+            popupCard.style.display = 'none'; // Close the upload pop-up
+        }
+    });
+</script>
+
 {% endblock %}

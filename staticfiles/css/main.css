@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Quicksand:wght@300..700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Inter", sans-serif;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+}
+
+.form-group {
+    margin-bottom: 1.5rem; /* Space between form groups */
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.25rem; /* Close label to select */
+    font-weight: bold;
+}
+
+.form-select {
+    width: 100%;
+    padding: 0.5rem;
+    height: 3.5rem; /* Set consistent height for the select box */
+    border-radius: 5px;
+    border: 1px solid #ced4da; /* Border styling */
+}
+
+.btn {
+    background-color: #007bff; /* Default button color */
+    color: white;
+    border: none;
+    padding: 10px;
+}
+
+.btn:hover {
+    background-color: #0056b3; /* Hover color for the button */
+}
+
+.dashboard-header {
+    text-align: center;
+    margin: 20px 0;
+}
+
+
+.openBtn{
+    background-color: #000;
+}
+
+.popup-card {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none; /* Hidden by default */
+}
+
+.popup-content {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff; /* Card background color */
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px; /* Adjust width as needed */
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #000;
+}
+.table-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}

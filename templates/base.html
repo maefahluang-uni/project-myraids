@@ -1,5 +1,5 @@
 <!-- base.html -->
- {% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +7,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Claim and Debt Management{% endblock %}</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Quicksand:wght@300..700&display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Quicksand:wght@300..700&display=swap">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         * {
@@ -21,6 +22,9 @@
 
         body {
             background-color: #F4FAFD;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
         }
 
         header {
@@ -37,9 +41,34 @@
             align-items: center;
         }
 
+        svg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 100%;
+            transform: rotateY(180deg);
+            z-index: -1;
+        }
+
         .logo {
             display: flex;
             align-items: center;
+        }
+
+        .logo p {
+            flex-grow: 1;
+            /* Allow the h1 to take up available space */
+            text-align: center;
+            /* Even spacing between elements */
+            margin-left: 265px;
+        }
+
+        select {
+            font-size: 16px;
+            padding: 5px;
+            margin-left: 310px;
+            border-radius: 5px;
+            border-color: #bbdff5;
         }
 
         .menu {
@@ -95,7 +124,7 @@
 
         .dashboard-header {
             text-align: center;
-            margin: 40px 0;
+            margin: 20px 0;
         }
 
         .table-container {
@@ -143,9 +172,30 @@
 <body>
     <header>
         <div class="container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                <path fill="#bbdff5" fill-opacity="1"
+                    d="M0,96L30,90.7C60,85,120,75,180,58.7C240,43,300,21,360,32C420,43,480,85,540,101.3C600,117,660,107,720,96C780,85,840,75,900,80C960,85,1020,107,1080,138.7C1140,171,1200,213,1260,229.3C1320,245,1380,235,1410,229.3L1440,224L1440,320L1410,320C1380,320,1320,320,1260,320C1200,320,1140,320,1080,320C1020,320,960,320,900,320C840,320,780,320,720,320C660,320,600,320,540,320C480,320,420,320,360,320C300,320,240,320,180,320C120,320,60,320,30,320L0,320Z">
+                </path>
+            </svg>
             <div class="logo">
                 <span class="menu" id="menuBtn">&#9776;</span>
-                <img src="https://maechanhospital.go.th/images/logo66.png" alt="Logo" width="180">
+                <a href="{% url 'matching:home' %}">
+                    <img src="https://maechanhospital.go.th/images/logo66.png" alt="Logo" width="180">
+                </a>
+                <p>{% block header %}Claim and Debt Management{% endblock %}</p>
+                <select name="users" id="users" onchange="handleSelect(this)">
+                    {% if user.is_authenticated %}
+                    <option value="{{ user.username }}" selected>{{ user.username }}</option>
+                    <option value="logout">Logout</option>
+                    {% else %}
+                    <option value="guest" selected>Guest</option>
+                    {% endif %}
+                </select>
+
+                <form id="logoutForm" method="POST" action="{% url 'matching:logout' %}" style="display: none;">
+                    {% csrf_token %}
+                </form>
+
             </div>
         </div>
     </header>
@@ -156,8 +206,11 @@
         </div>
         <ul>
             <li><a href="{% url 'matching:home' %}">Dashboard</a></li>
-            <li><a href="{% url 'upload:upload_file' %}">Upload</a></li>
+            <li><a href="{% url 'upload:upload_file' %}">Outpatient</a></li>
+            <li><a href="{% url 'upload:upload_file' %}">Inpatient</a></li>
+            <li><a href="{% url 'matching:view_matching_history' %}">History Log</a></li>
             <li><a href="{% url 'matching:select_files' %}">Save File</a></li>
+            <li><a href="{% url 'matching:create_matching_preset' %}">Create Matching Preset</a></li>
             <li>
                 <form method="POST" action="{% url 'matching:logout' %}">
                     {% csrf_token %}
@@ -166,18 +219,13 @@
             </li>
         </ul>
     </nav>
-
-    <div class="dashboard-header">
-        <h1>{% block header %}Claim and Debt Management{% endblock %}</h1>
-    </div>
-
-    <main>
-        <div class="table-container">
-            {% block content %}
-            <!-- Content will be provided by child templates -->
-            {% endblock %}
-        </div>
-    </main>
+<br>
+<main>
+    {% block content %}
+    <!-- Content will be provided by child templates -->
+    {% endblock %}
+</main>
+    
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -195,6 +243,12 @@
                 }
             });
         });
+
+        function handleSelect(selectElement) {
+            if (selectElement.value === 'logout') {
+                document.getElementById('logoutForm').submit();
+            }
+        }
     </script>
 </body>
 

@@ -1,20 +1,148 @@
 <!-- matching/templates/home.html -->
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Claim and Debt Management{% endblock %}
 
 {% block content %}
-<div class="dashboard-header">
+<link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- <div class="dashboard-header">
     <h1>Dashboard</h1>
-</div>
-<main>
-    <div class="table-container">
-        <div class="p-container">
+</div> -->
+<!-- <div class="p-container">
             <li><a href="{% url 'matching:select_files' %}">Select Files for Matching</a></li>
             <li><a href="{% url 'matching:view_results' %}">View Matching Results</a></li>
-            <li><a href="{% url 'matching:view_matching_history' %}">View Matching History</a></li>
-            <li><a href="{% url 'matching:create_matching_preset' %}">Create Matching Preset</a></li>
+        </div> -->
+<div class="dashboard">
+    <div class="row">
+        <div class="column">
+            <div class="card-debt">
+                <p class="num">{{ total_debtors }}</p>
+                <p>Total Debtor Files</p>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card-claim">
+                <p class="num">{{ total_claimers }}</p>
+                <p>Total Claimer Files</p>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card-user">
+                <p class="num">{{ total_users }}</p>
+                <p>Total Users</p>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card-file">
+                <p class="num">{{ total_uploaded_files }}</p>
+                <p>Total Files Uploaded</p>
+            </div>
         </div>
     </div>
-</main>
+
+    <div class="row2">
+        <div class="column2">
+            <div class="card-r21">
+                <canvas id="debtorClaimerChart"></canvas>
+                <p class="graph">Total Debtor Files vs. Total Claimer Files</p>
+            </div>
+        </div>
+
+        <div class="column2">
+            <div class="card-r22">
+                <canvas id="uploadedFilesChart"></canvas>
+                <p class="graph">Total Files Uploaded by Month</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row3">
+        <div class="column3">
+            <div class="card-r31">
+                <h3>Card 1</h3>
+                <p class="graph">Some text</p>
+            </div>
+        </div>
+
+        <div class="column3">
+            <div class="card-r32">
+                <h3>Card 2</h3>
+                <p class="graph">Some text</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="application/json" id="debtorClaimerData">
+    {
+        "total_debtors": {{ total_debtors|default:0 }},
+        "total_claimers": {{ total_claimers|default:0 }}
+    }
+</script>
+
+<script>
+    // Parse the serialized JSON data
+    const data = JSON.parse(document.getElementById('debtorClaimerData').textContent);
+
+    // Create the Pie Chart
+    const debtorClaimerPieChart = new Chart(document.getElementById('debtorClaimerChart'), {
+        type: 'pie', // Change the type to 'pie' for a pie chart
+        data: {
+            labels: ['Debtor Files', 'Claimer Files'], // Labels for the two categories
+            datasets: [{
+                label: 'Total Files',
+                data: [data.total_debtors, data.total_claimers], // Use parsed JSON data
+                backgroundColor: ['#FF6384', '#36A2EB'], // Colors for the pie slices
+                borderColor: ['#FFFFFF', '#FFFFFF'], // Border color (optional)
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true, // Make the chart responsive
+            plugins: {
+                legend: {
+                    display: true, // Display the legend for the pie chart
+                    position: 'top', // Position of the legend
+                }
+            }
+        }
+    });
+</script>
+
+<script type="application/json" id="uploadedFilesData">
+    {{ uploaded_files_by_month|safe }}
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const uploadedFilesData = JSON.parse(document.getElementById('uploadedFilesData').textContent);
+
+        const uploadedFilesChart = new Chart(document.getElementById('uploadedFilesChart'), {
+            type: 'line',  // Change from 'bar' to 'line'
+            data: {
+                labels: Object.keys(uploadedFilesData), // Months as labels
+                datasets: [{
+                    label: 'All Files',
+                    data: Object.values(uploadedFilesData), // Counts as data
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)', // Use RGBA for transparency
+                    borderColor: '#FFCE56', // Border color for the line
+                    borderWidth: 2, // Thickness of the line
+                    fill: true, // Fill under the line
+                    tension: 0.3 // Smoothness of the line
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

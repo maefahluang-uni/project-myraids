@@ -1,0 +1,119 @@
+
+
+* {
+    box-sizing: border-box;
+  }
+  .dashboard {
+    margin-top: 30px;
+}
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  margin: 0 -5px;
+  position: relative;
+  margin-bottom: 20px;
+}
+.column {
+  flex: 1; /* Allow the columns to grow equally */
+  padding: 0 10px;
+  max-width: 17.8%;
+}
+p.num {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+} 
+
+.card p {
+  font-size: 1em;
+  margin-top: 0.5em;
+}
+
+.card-debt, .card-claim, .card-user, .card-file {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: #bbdff5;
+  height: 100%; /* Ensure cards take full height of the column */
+}
+
+.row2 {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  margin: 0 -5px;
+  position: relative;
+  margin-bottom: 20px;
+}
+.column2 {
+  flex: 1; /* Allow the columns to grow equally */
+  padding: 0 10px;
+  max-width: 600px; /* Set a max width for the column */
+}
+
+.card-r21, .card-r22{
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: #fff;
+  display: flex; /* Make the card a flex container */
+  flex-direction: column; /* Arrange children vertically */
+  align-items: center; /* Center items horizontally */
+  height: 100%; /* Allow card to take up full height */
+}
+canvas {
+  width: 100%;
+  max-width: 400px;
+  height: auto; 
+  max-height: 300px;
+  flex-grow: 1;
+}
+p.graph {
+  font-weight: bold;
+  margin-top: 10px;
+} 
+
+.row3 {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  margin: 0 -5px;
+  position: relative;
+  margin-bottom: 20px;
+}
+.column3 {
+  flex: 1; /* Allow the columns to grow equally */
+  padding: 0 10px;
+  max-width: 600px; /* Set a max width for the column */
+}
+
+.card-r31, .card-r32{
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: #fff;
+  display: flex; /* Make the card a flex container */
+  flex-direction: column; /* Arrange children vertically */
+  align-items: center; /* Center items horizontally */
+  height: 100%; /* Allow card to take up full height */
+}
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+/* Responsive columns */
+@media screen and (max-width: 600px) {
+  .column {
+    width: 100%;
+    display: block;
+    margin-bottom: 20px;
+  }
+}
