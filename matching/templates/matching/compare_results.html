@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Comparison Results{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">Comparison Results</h2>
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Common Column Value</th>
+                <th scope="col">File Name</th>
+
+                <!-- Display combined column headers -->
+                {% for combined_column in combined_columns %}
+                    <th scope="col">{{ combined_column }}</th>
+                {% endfor %}
+
+                <th scope="col">Status</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+                <tr>
+                    <td>{{ result.common_column_value }}</td>
+                    <td>{{ result.file_name }}</td>
+
+                    <!-- Display each combined column data -->
+                    {% for value in result.combined_column_data.values %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+
+                    <td class="{% if result.status == 'Mismatch' %}text-danger{% else %}text-success{% endif %}">
+                        {{ result.status }}
+                    </td>
+                    <td>{{ result.description }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No comparison results found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

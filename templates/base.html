@@ -29,7 +29,7 @@
         <ul>
             <li><a href="{% url 'matching:home' %}">Dashboard</a></li>
             <li><a href="{% url 'upload:upload_file' %}">Upload</a></li>
-            <li><a href="{% url 'matching:file_selection' %}">Save File</a></li>
+            <li><a href="{% url 'matching:create_comparison' %}">compare file</a></li>
             <li>
                 <form method="POST" action="{% url 'matching:logout' %}">
                     {% csrf_token %}

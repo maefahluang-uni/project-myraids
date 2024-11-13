@@ -1,54 +1,38 @@
-# models.py
+# matching/models.py
 
-import logging
 from django.db import models
 from django.contrib.auth.models import User
-from upload.models import ExcelFile  # Importing from upload app
+from upload.models import ExcelFile  
 
-# Configure logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-class SelectedColumns(models.Model):
-    """
-    Model to store information about selected columns from two Excel files
-    for matching purposes, including common and specific columns.
-    """
+class Comparison(models.Model):
+    """Model to represent a comparison between two Excel files."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    excel_file_1 = models.ForeignKey(ExcelFile, on_delete=models.CASCADE, related_name='file1')
-    excel_file_2 = models.ForeignKey(ExcelFile, on_delete=models.CASCADE, related_name='file2')
-    common_column = models.CharField(max_length=100)
-    columns_file1 = models.JSONField()  # List of columns from file 1
-    columns_file2 = models.JSONField()  # List of columns from file 2
-    created_at = models.DateTimeField(auto_now_add=True)  # New field to track creation date
+    file1 = models.ForeignKey(ExcelFile, related_name='comparisons_as_file1', on_delete=models.CASCADE)
+    file2 = models.ForeignKey(ExcelFile, related_name='comparisons_as_file2', on_delete=models.CASCADE)
+    common_column = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Selected columns for matching by {self.user}"
+        return f"Comparison by {self.user} between {self.file1} and {self.file2} on {self.common_column}"
 
-    def save(self, *args, **kwargs):
-        # Log action on save
-        logger.debug(f"Saving SelectedColumns: user={self.user}, "
-                     f"file1={self.excel_file_1}, file2={self.excel_file_2}, "
-                     f"common_column={self.common_column}")
-        super().save(*args, **kwargs)
-
-
-class MatchedResult(models.Model):
-    """
-    Model to store individual matched results between two files based on 
-    the selected common column and paired columns.
-    """
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    session = models.ForeignKey(SelectedColumns, on_delete=models.CASCADE, related_name='matched_results')
-    common_value = models.CharField(max_length=255)  # Value in the common column used for matching
-    file_source = models.CharField(max_length=50, choices=[('file1', 'File 1'), ('file2', 'File 2')])
-    column_data = models.JSONField()  # Dictionary to store paired column data from each file
+class ColumnSelection(models.Model):
+    """Model to save user-selected columns for comparison."""
+    comparison = models.ForeignKey(Comparison, related_name='column_selections', on_delete=models.CASCADE)
+    column_file1 = models.CharField(max_length=255)
+    column_file2 = models.CharField(max_length=255)
+    combined_column_name = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return f"Matched result for {self.common_value} from {self.file_source}"
+        return f"{self.column_file1} - {self.column_file2} ({self.combined_column_name})"
 
-    def save(self, *args, **kwargs):
-        # Log action on save
-        logger.debug(f"Saving MatchedResult: user={self.user}, session={self.session}, "
-                     f"common_value={self.common_value}, file_source={self.file_source}")
-        super().save(*args, **kwargs)
+class ComparisonResult(models.Model):
+    """Model to store the result of the comparison."""
+    comparison = models.ForeignKey(Comparison, related_name='results', on_delete=models.CASCADE)
+    common_column_value = models.CharField(max_length=255)
+    data_file1 = models.JSONField()  # Stores selected column data from File 1 as JSON
+    data_file2 = models.JSONField()  # Stores selected column data from File 2 as JSON
+    status = models.CharField(max_length=50, choices=[('Match', 'Match'), ('Mismatch', 'Mismatch')])
+    description = models.TextField()
+
+    def __str__(self):
+        return f"Result for Comparison {self.comparison.id} | Status: {self.status}"

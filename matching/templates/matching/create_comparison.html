@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Start New Comparison{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Start a New Comparison</h2>
+    
+    <form method="post" action="{% url 'matching:create_comparison' %}">
+        {% csrf_token %}
+        
+        {{ form.as_p }}  <!-- Render the form fields directly from the FileSelectionForm -->
+
+        <button type="submit">Next: Select Columns</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,78 +1,73 @@
-# forms.py
+# matching/forms.py
 
 from django import forms
 from upload.models import ExcelFile
-from upload.forms import LOCATION_CHOICES, PATIENT_TYPE_CHOICES
-
 
 class FileSelectionForm(forms.Form):
-    """
-    Step 1: Form for selecting two Excel files from a list.
-    """
-    excel_file_1 = forms.ModelChoiceField(queryset=ExcelFile.objects.all(), label="Select First Excel File")
-    excel_file_2 = forms.ModelChoiceField(queryset=ExcelFile.objects.all(), label="Select Second Excel File")
+    """Form for selecting two files to compare."""
+    excel_file_1 = forms.ModelChoiceField(queryset=ExcelFile.objects.all(), label="Select First File")
+    excel_file_2 = forms.ModelChoiceField(queryset=ExcelFile.objects.all(), label="Select Second File")
 
     def clean(self):
-        """
-        Ensure that two different files are selected.
-        """
         cleaned_data = super().clean()
-        file1 = cleaned_data.get('excel_file_1')
-        file2 = cleaned_data.get('excel_file_2')
+        file1 = cleaned_data.get("excel_file_1")
+        file2 = cleaned_data.get("excel_file_2")
 
         if file1 == file2:
-            raise forms.ValidationError("Please select two different files.")
+            raise forms.ValidationError("Please select two different files for comparison.")
+        return cleaned_data
+
+
+class ColumnSelectionForm(forms.Form):
+    """Form for selecting columns from each file and choosing a common column for alignment."""
+    def __init__(self, *args, file1_columns=None, file2_columns=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Create choice lists for each file’s columns
+        file1_choices = [(col, col) for col in file1_columns or []]
+        file2_choices = [(col, col) for col in file2_columns or []]
+
+        self.fields['columns_file1'] = forms.MultipleChoiceField(
+            choices=file1_choices,
+            label="Select Columns from First File",
+            widget=forms.CheckboxSelectMultiple,
+        )
+        self.fields['columns_file2'] = forms.MultipleChoiceField(
+            choices=file2_choices,
+            label="Select Columns from Second File",
+            widget=forms.CheckboxSelectMultiple,
+        )
+        self.fields['common_column'] = forms.ChoiceField(
+            choices=[(col, col) for col in (file1_columns or []) if col in (file2_columns or [])],
+            label="Select Common Column"
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        columns_file1 = cleaned_data.get("columns_file1")
+        columns_file2 = cleaned_data.get("columns_file2")
+
+        if len(columns_file1) != len(columns_file2):
+            raise forms.ValidationError("Please select an equal number of columns from both files for comparison.")
         
         return cleaned_data
 
-class ColumnSelectionForm(forms.Form):
-    """
-    Step 2: Form for selecting the common column and specific columns from each file.
-    """
-    common_column = forms.ChoiceField(label="Select Common Column")
-    columns_file1 = forms.MultipleChoiceField(
-        label="Columns from First File",
-        widget=forms.CheckboxSelectMultiple,
-        required=True
-    )
-    columns_file2 = forms.MultipleChoiceField(
-        label="Columns from Second File",
-        widget=forms.CheckboxSelectMultiple,
-        required=True
-    )
-
-    def __init__(self, *args, **kwargs):
-        """
-        Dynamically populate choices for columns and exclude the common column from 
-        the specific column selection options.
-        """
-        file1_columns = kwargs.pop('file1_columns', [])
-        file2_columns = kwargs.pop('file2_columns', [])
-        super().__init__(*args, **kwargs)
-
-        # Populate common column choices with columns available in both files
-        common_columns = [col for col in file1_columns if col in file2_columns]
-        self.fields['common_column'].choices = [(col, col) for col in common_columns]
-        
-        # Exclude the common column from the specific columns
-        self.fields['columns_file1'].choices = [(col, col) for col in file1_columns if col not in common_columns]
-        self.fields['columns_file2'].choices = [(col, col) for col in file2_columns if col not in common_columns]
-
 
 class ColumnPairingForm(forms.Form):
-    """
-    Step 3: Form for pairing columns from the selected columns of each file.
-    Uses dropdowns for each column in File 1 to select a corresponding column from File 2.
-    """
-    def __init__(self, *args, **kwargs):
-        columns_file1 = kwargs.pop('columns_file1', [])
-        columns_file2 = kwargs.pop('columns_file2', [])
+    """Form for mapping columns between the two selected files for comparison."""
+    def __init__(self, *args, columns_file1=None, columns_file2=None, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # Populate dropdown fields for each column in File 1, with choices from columns in File 2
         for col1 in columns_file1:
             self.fields[f"pair_{col1}"] = forms.ChoiceField(
-                label=f"Pair for '{col1}'",
                 choices=[(col2, col2) for col2 in columns_file2],
-                required=False
+                label=f"Map '{col1}' to"
             )
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        selected_pairs = [val for key, val in cleaned_data.items() if key.startswith("pair_")]
+
+        if len(selected_pairs) != len(set(selected_pairs)):
+            raise forms.ValidationError("Each column from the second file must be mapped to only one column from the first file.")
+
+        return cleaned_data

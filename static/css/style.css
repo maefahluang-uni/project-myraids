@@ -231,3 +231,14 @@ form .btn-submit:hover {
     border-radius: 5px;
     margin-bottom: 15px;
 }
+
+/* Highlight mismatched rows with a light red background */
+.mismatch-row {
+    background-color: #f8d7da;
+}
+.text-danger {
+    color: #dc3545;
+}
+.text-success {
+    color: #28a745;
+}

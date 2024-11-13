@@ -1,4 +1,3 @@
-<!-- matching/templates/home.html -->
 {% extends 'base.html' %}
 
 {% block title %}Claim and Debt Management{% endblock %}
@@ -7,50 +6,28 @@
 <div class="dashboard-header">
     <h1>Dashboard</h1>
 </div>
+
 <main>
     <div class="actions">
         <h2>Actions</h2>
         <ul>
-            <!-- Link to start a new comparison session -->
-            <li><a href="{% url 'matching:file_selection' %}">Start New Comparison</a></li>
+            <li><a href="{% url 'matching:create_comparison' %}">Start New Comparison</a></li>
         </ul>
     </div>
 
-    <div class="sessions">
-        <h2>Past Comparison Sessions</h2>
-        {% if sessions %}
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Session ID</th>
-                            <th>User</th>
-                            <th>File 1</th>
-                            <th>File 2</th>
-                            <th>Common Column</th>
-                            <th>Created At</th>
-                            <th>View Results</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for session in sessions %}
-                            <tr>
-                                <td>{{ session.id }}</td>
-                                <td>{{ session.user.username }}</td>
-                                <td>{{ session.excel_file_1 }}</td>
-                                <td>{{ session.excel_file_2 }}</td>
-                                <td>{{ session.common_column }}</td>
-                                <td>{{ session.created_at|date:"Y-m-d H:i" }}</td>
-                                <!-- Link to view results of this session, passing the session ID -->
-                                <td><a href="{% url 'matching:match_results' %}?session_id={{ session.id }}">View Results</a></td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <p>No past comparison sessions found.</p>
-        {% endif %}
+    <div class="comparisons">
+        <h2>Your Comparisons</h2>
+        <ul>
+            {% for comparison in comparisons %}
+                <li>
+                    <a href="{% url 'matching:compare_results' comparison.id %}">
+                        Comparison between {{ comparison.file1 }} and {{ comparison.file2 }} on "{{ comparison.common_column }}"
+                    </a> - Created at: {{ comparison.created_at|date:"Y-m-d H:i" }}
+                </li>
+            {% empty %}
+                <li>No comparisons found. Start a new comparison above.</li>
+            {% endfor %}
+        </ul>
     </div>
 </main>
 {% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% load static %}  <!-- Load static files in Django -->
+
+{% block title %}Select Columns{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Select Columns for Comparison</h2>
+
+    {% if form.errors %}
+        <p class="error-message">Please correct the errors below.</p>
+    {% endif %}
+
+    <form method="post" action="{% url 'matching:column_selection' %}" id="column-selection-form">
+        {% csrf_token %}
+
+        <!-- Flex container for form columns -->
+        <div class="form-columns">
+            <div id="file1-columns" class="column">
+                <h3>Select Columns from File 1:</h3>
+                {{ form.columns_file1 }}
+            </div>
+
+            <div id="file2-columns" class="column">
+                <h3>Select Columns from File 2:</h3>
+                {{ form.columns_file2 }}
+            </div>
+        </div>
+
+        <!-- Common column selection -->
+        <div class="common-column">
+            <h3>Select Common Column:</h3>
+            {{ form.common_column }}
+        </div>
+
+        <p id="column-count-warning" class="warning-message" style="display: none;">
+            Please select an equal number of columns from both files.
+        </p>
+
+        <button type="button" onclick="submitColumnSelection()">Submit</button>
+    </form>
+</div>
+
+<!-- Link to external CSS file -->
+<link rel="stylesheet" type="text/css" href="{% static 'matching/select_columns.css' %}">
+
+<script>
+    // Add event listeners to checkboxes to validate column count dynamically
+    document.querySelectorAll('[name="columns_file1"]').forEach((checkbox) => {
+        checkbox.addEventListener('change', validateColumnCount);
+    });
+
+    document.querySelectorAll('[name="columns_file2"]').forEach((checkbox) => {
+        checkbox.addEventListener('change', validateColumnCount);
+    });
+
+    function validateColumnCount() {
+        const selectedFile1 = document.querySelectorAll('[name="columns_file1"]:checked').length;
+        const selectedFile2 = document.querySelectorAll('[name="columns_file2"]:checked').length;
+
+        document.getElementById('column-count-warning').style.display = (selectedFile1 !== selectedFile2) ? 'block' : 'none';
+    }
+
+    function submitColumnSelection() {
+        const selectedFile1 = document.querySelectorAll('[name="columns_file1"]:checked').length;
+        const selectedFile2 = document.querySelectorAll('[name="columns_file2"]:checked').length;
+
+        if (selectedFile1 === selectedFile2) {
+            document.getElementById('column-selection-form').submit();
+        } else {
+            alert('Please select an equal number of columns.');
+        }
+    }
+</script>
+{% endblock %}

@@ -1,245 +1,192 @@
-# views.py
+# matching/views.py
 
-import logging
-from django.db.models import Q
-import pandas as pd
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import FileSelectionForm, ColumnSelectionForm, ColumnPairingForm
-from .models import SelectedColumns, MatchedResult
-from upload.models import ExcelFile,Debtor,Claimer
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
+from .models import Comparison, ColumnSelection, ComparisonResult
+from .forms import FileSelectionForm, ColumnSelectionForm, ColumnPairingForm
+from .utils import load_columns_from_file, create_combined_column_names
+import pandas as pd
 
 @login_required
 def home(request):
-    sessions = SelectedColumns.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'matching/home.html', {'sessions': sessions})
-
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-def get_columns_from_model(model_class):
-    return [field.name for field in model_class._meta.fields if field.name != 'id']
-
-
+    """Home view for the matching app."""
+    comparisons = Comparison.objects.filter(user=request.user)
+    return render(request, 'matching/home.html', {'comparisons': comparisons})
 
 @login_required
-def file_selection_view(request):
+def load_columns(request):
+    """AJAX view to load columns from the selected files and check for equal column count."""
+    file1_id = request.GET.get('file1_id')
+    file2_id = request.GET.get('file2_id')
+
+    # Load columns from both files
+    columns_file1, _ = load_columns_from_file(file1_id)
+    columns_file2, _ = load_columns_from_file(file2_id)
+
+    # Check if columns have equal count
+    columns_equal = len(columns_file1) == len(columns_file2)
+
+    return JsonResponse({
+        'columns_file1': columns_file1,
+        'columns_file2': columns_file2,
+        'columns_equal': columns_equal,
+        'message': "Please select an equal number of columns." if not columns_equal else ""
+    })
+
+@login_required
+def create_comparison(request):
+    """View to create a new comparison."""
     if request.method == 'POST':
         form = FileSelectionForm(request.POST)
         if form.is_valid():
-            # Get the selected files and save necessary details to the session
             file1 = form.cleaned_data['excel_file_1']
             file2 = form.cleaned_data['excel_file_2']
 
-            # Save IDs and patient/location data in session for subsequent steps
+            # Load columns from the selected files
+            columns_file1, _ = load_columns_from_file(file1.id)
+            columns_file2, _ = load_columns_from_file(file2.id)
+
+            # Save selections and columns in the session
             request.session['file1_id'] = file1.id
             request.session['file2_id'] = file2.id
-            request.session['patient_type_1'] = file1.patient_type
-            request.session['location_1'] = file1.location
-            request.session['patient_type_2'] = file2.patient_type
-            request.session['location_2'] = file2.location
+            request.session['columns_file1'] = columns_file1
+            request.session['columns_file2'] = columns_file2
 
             return redirect('matching:column_selection')
     else:
         form = FileSelectionForm()
-    return render(request, 'matching/file_selection.html', {'form': form})
+
+    return render(request, 'matching/create_comparison.html', {'form': form})
 
 @login_required
-def column_selection_view(request):
-    # Retrieve file IDs from session
-    file1_id = request.session.get('file1_id')
-    file2_id = request.session.get('file2_id')
+def select_columns(request):
+    """View to handle user column selection based on file columns."""
+    columns_file1 = request.session.get('columns_file1', [])
+    columns_file2 = request.session.get('columns_file2', [])
 
-    # Check if both files are selected
-    if not file1_id or not file2_id:
-        messages.error(request, "Please select files first.")
-        return redirect('matching:file_selection')
-
-    # Retrieve the ExcelFile instances
-    file1 = ExcelFile.objects.get(id=file1_id)
-    file2 = ExcelFile.objects.get(id=file2_id)
-
-    # Determine columns for each file without patient type or location dependency
-    file1_columns = get_columns_from_model(Debtor if file1.debtors.exists() else Claimer)
-    file2_columns = get_columns_from_model(Debtor if file2.debtors.exists() else Claimer)
-
-    # Handle POST request
     if request.method == 'POST':
-        form = ColumnSelectionForm(request.POST, file1_columns=file1_columns, file2_columns=file2_columns)
+        form = ColumnSelectionForm(request.POST, file1_columns=columns_file1, file2_columns=columns_file2)
         if form.is_valid():
-            # Store selected columns in session for later steps
-            request.session['columns_file1'] = form.cleaned_data['columns_file1']
-            request.session['columns_file2'] = form.cleaned_data['columns_file2']
-            request.session['common_column'] = form.cleaned_data['common_column']
-            return redirect('matching:column_pairing')
-    else:
-        # Initialize form with columns from each file
-        form = ColumnSelectionForm(file1_columns=file1_columns, file2_columns=file2_columns)
+            selected_columns_file1 = form.cleaned_data['columns_file1']
+            selected_columns_file2 = form.cleaned_data['columns_file2']
+            common_column = form.cleaned_data['common_column']
 
-    return render(request, 'matching/column_selection.html', {
-        'form': form,
-        'file1': file1,
-        'file2': file2
-    })
+            # Check if columns match; if not, redirect to manual pairing
+            if set(selected_columns_file1) != set(selected_columns_file2):
+                request.session['selected_columns_file1'] = selected_columns_file1
+                request.session['selected_columns_file2'] = selected_columns_file2
+                request.session['common_column'] = common_column
+                return redirect('matching:pair_columns')
+
+            # Columns match, proceed to create the Comparison instance
+            comparison = Comparison.objects.create(
+                user=request.user,
+                file1_id=request.session['file1_id'],
+                file2_id=request.session['file2_id'],
+                common_column=common_column
+            )
+
+            # Save the column mappings directly if no manual pairing needed
+            combined_columns = create_combined_column_names(selected_columns_file1, selected_columns_file2)
+            for col1, col2, combined_name in zip(selected_columns_file1, selected_columns_file2, combined_columns):
+                ColumnSelection.objects.create(
+                    comparison=comparison,
+                    column_file1=col1,
+                    column_file2=col2,
+                    combined_column_name=combined_name
+                )
+
+            return redirect('matching:compare_results', comparison_id=comparison.id)
+    else:
+        form = ColumnSelectionForm(file1_columns=columns_file1, file2_columns=columns_file2)
+
+    return render(request, 'matching/select_columns.html', {'form': form})
 
 @login_required
-def column_pairing_view(request):
-    selected_columns_file1 = request.session.get('columns_file1')
-    selected_columns_file2 = request.session.get('columns_file2')
-
-    if not selected_columns_file1 or not selected_columns_file2:
-        messages.error(request, "Please complete the column selection step first.")
-        logger.debug("Column selection data missing; redirecting to column selection.")
-        return redirect('matching:column_selection')
+def pair_columns(request):
+    """View for manually pairing columns between two files if there are mismatches."""
+    selected_columns_file1 = request.session.get('selected_columns_file1', [])
+    selected_columns_file2 = request.session.get('selected_columns_file2', [])
 
     if request.method == 'POST':
         form = ColumnPairingForm(request.POST, columns_file1=selected_columns_file1, columns_file2=selected_columns_file2)
         if form.is_valid():
-            column_pairs = {
-                col1: form.cleaned_data[f"pair_{col1}"]
-                for col1 in selected_columns_file1
-                if form.cleaned_data.get(f"pair_{col1}")
-            }
-            request.session['column_pairs'] = column_pairs
-            request.session.modified = True  # Ensure session persistence
-            logger.debug(f"Column pairs saved to session: {column_pairs}")
-            return redirect('matching:match_results')
+            # Create Comparison instance
+            comparison = Comparison.objects.create(
+                user=request.user,
+                file1_id=request.session['file1_id'],
+                file2_id=request.session['file2_id'],
+                common_column=request.session['common_column']
+            )
+
+            # Save column mappings based on user input
+            for col1 in selected_columns_file1:
+                col2 = form.cleaned_data[f'pair_{col1}']
+                combined_name = f"{col1}_{col2}"
+                ColumnSelection.objects.create(
+                    comparison=comparison,
+                    column_file1=col1,
+                    column_file2=col2,
+                    combined_column_name=combined_name
+                )
+
+            return redirect('matching:compare_results', comparison_id=comparison.id)
     else:
         form = ColumnPairingForm(columns_file1=selected_columns_file1, columns_file2=selected_columns_file2)
 
-    return render(request, 'matching/column_pairing.html', {'form': form})
-
-
-@login_required
-def match_results_view(request):
-    # Retrieve session data for files and columns
-    file1_id = request.session.get('file1_id')
-    file2_id = request.session.get('file2_id')
-    common_column = request.session.get('common_column')
-    column_pairs = request.session.get('column_pairs')
-
-    logger.debug(f"Session data in match_results_view: file1_id={file1_id}, file2_id={file2_id}, "
-                 f"common_column={common_column}, column_pairs={column_pairs}")
-
-    if not all([file1_id, file2_id, common_column, column_pairs]):
-        messages.error(request, "Required data is missing. Please complete all steps.")
-        logger.debug("Missing session data in match_results_view, redirecting to column selection.")
-        return redirect('matching:column_selection')
-    file1_columns = list(column_pairs.keys())
-    file2_columns = list(column_pairs.values())
-    
-    try:
-        # Retrieve ExcelFile instances
-        file1 = ExcelFile.objects.get(id=file1_id)
-        file2 = ExcelFile.objects.get(id=file2_id)
-
-        # Retrieve data based on the Debtor or Claimer associations
-        file1_data = file1.debtors.values(*file1_columns) if file1.debtors.exists() else file1.claimers.values(*file1_columns)
-        file2_data = file2.debtors.values(*file2_columns) if file2.debtors.exists() else file2.claimers.values(*file2_columns)
-
-        # Convert data to DataFrames and rename columns for merging
-        df1 = pd.DataFrame(file1_data).rename(columns=column_pairs)
-        df1['file_source'] = 'file1'
-        df2 = pd.DataFrame(file2_data)
-        df2['file_source'] = 'file2'
-
-        # Ensure the common column exists in both DataFrames
-        if common_column not in df1.columns or common_column not in df2.columns:
-            messages.error(request, f"Common column '{common_column}' not found in both files.")
-            logger.debug(f"Common column '{common_column}' missing in one or both DataFrames.")
-            return redirect('matching:column_selection')
-
-        # Merge DataFrames on the common column
-        merged_df = pd.merge(df1, df2, on=common_column, how='outer', indicator=True)
-        
-        # Log information about the merge result for debugging
-        logger.debug(f"Merged DataFrame:\n{merged_df}")
-
-        # Save session details in SelectedColumns
-        session = SelectedColumns.objects.create(
-            user=request.user,
-            excel_file_1=file1,
-            excel_file_2=file2,
-            common_column=common_column,
-            columns_file1=file1_columns,
-            columns_file2=file2_columns
-        )
-        logger.debug(f"SelectedColumns session created with ID {session.id}")
-
-        # Clear any previous matched results for this session
-        MatchedResult.objects.filter(session=session).delete()
-
-        # Save each matched result in MatchedResult model
-        for _, row in merged_df.iterrows():
-            common_value = row[common_column]
-            file_source = row['file_source']
-            column_data = {col: row[col] for col in column_pairs.keys() if col in row}
-
-            # Save individual matched result
-            matched_result = MatchedResult.objects.create(
-                user=request.user,
-                session=session,
-                common_value=common_value,
-                file_source=file_source,
-                column_data=column_data
-            )
-            logger.debug(f"MatchedResult created with ID {matched_result.id} for common value '{common_value}'")
-
-        # Redirect to a separate view for displaying the results
-        return redirect('matching:display_results', session_id=session.id)
-
-    except ExcelFile.DoesNotExist:
-        messages.error(request, "One or both selected files could not be found.")
-        logger.debug("ExcelFile not found in match_results_view.")
-        return redirect('matching:file_selection')
-    except ValueError as e:
-        messages.error(request, str(e))
-        logger.debug(f"ValueError: {str(e)}")
-        return redirect('matching:file_selection')
-    except Exception as e:
-        messages.error(request, f"An error occurred while processing the files: {str(e)}")
-        logger.debug(f"Unexpected error in match_results_view: {str(e)}")
-        return redirect('matching:file_selection')
-    
-
+    return render(request, 'matching/pair_columns.html', {'form': form})
 
 @login_required
-def display_results(request, session_id):
-    try:
-        # Retrieve the session and associated matched results
-        session = SelectedColumns.objects.get(id=session_id, user=request.user)
-        matched_results = MatchedResult.objects.filter(session=session).order_by('common_value', 'file_source')
+def compare_results(request, comparison_id):
+    """View to display the results of the comparison."""
+    comparison = get_object_or_404(Comparison, id=comparison_id, user=request.user)
+    column_selections = comparison.column_selections.all()
 
-        # Log matched results to confirm data
-        logger.debug(f"Displaying results for session {session_id}, matched results count: {matched_results.count()}")
+    # Load dataframes for comparison
+    file1_id = comparison.file1.id
+    file2_id = comparison.file2.id
+    _, df1 = load_columns_from_file(file1_id)
+    _, df2 = load_columns_from_file(file2_id)
 
-        # Organize data for display
-        display_data = {}
-        for result in matched_results:
-            common_val = result.common_value
-            if common_val not in display_data:
-                display_data[common_val] = {"file1": {}, "file2": {}}
-            display_data[common_val][result.file_source] = result.column_data
+    # Create combined column names for each pairing
+    combined_columns = [
+        f"{sel.column_file1}_{sel.column_file2}" for sel in column_selections
+    ]
 
-        # Render results to the template
-        return render(request, 'matching/match_results.html', {
-            'display_data': display_data,
-            'common_column': session.common_column
-        })
+    # Perform comparison based on common column and mapped columns
+    results = []
+    for _, row1 in df1.iterrows():
+        for _, row2 in df2.iterrows():
+            if row1[comparison.common_column] == row2[comparison.common_column]:
+                common_value = row1[comparison.common_column]
 
-    except SelectedColumns.DoesNotExist:
-        messages.error(request, "The selected session could not be found.")
-        logger.debug("SelectedColumns session not found in display_results.")
-        return redirect('matching:home')
-    except Exception as e:
-        messages.error(request, f"An error occurred while displaying results: {str(e)}")
-        logger.debug(f"Unexpected error in display_results: {str(e)}")
-        return redirect('matching:home')
+                # Data for file1 and file2 separately using combined column names
+                data_file1 = {f"{sel.column_file1}_{sel.column_file2}": row1[sel.column_file1] for sel in column_selections}
+                data_file2 = {f"{sel.column_file1}_{sel.column_file2}": row2[sel.column_file2] for sel in column_selections}
+                status = 'Match' if data_file1 == data_file2 else 'Mismatch'
+                description = 'All data matches' if status == 'Match' else 'Data differs'
+
+                # Append separate results for file1 and file2 under the same common column value
+                results.append({
+                    'common_column_value': common_value,
+                    'file_name': 'file1',
+                    'combined_column_data': data_file1,
+                    'status': status,
+                    'description': description
+                })
+                results.append({
+                    'common_column_value': common_value,
+                    'file_name': 'file2',
+                    'combined_column_data': data_file2,
+                    'status': status,
+                    'description': description
+                })
+
+    return render(request, 'matching/compare_results.html', {
+        'results': results,
+        'comparison': comparison,
+        'combined_columns': combined_columns  # Pass combined column names to the template
+    })
 
 
