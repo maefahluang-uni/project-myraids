@@ -149,6 +149,10 @@ def compare_results(request, comparison_id):
     _, df1 = load_columns_from_file(file1_id)
     _, df2 = load_columns_from_file(file2_id)
 
+    # Retrieve the selected instance names
+    file1_name = str(comparison.file1)
+    file2_name = str(comparison.file2)
+
     # Create combined column names for each pairing
     combined_columns = [
         f"{sel.column_file1}_{sel.column_file2}" for sel in column_selections
@@ -170,14 +174,14 @@ def compare_results(request, comparison_id):
                 # Append separate results for file1 and file2 under the same common column value
                 results.append({
                     'common_column_value': common_value,
-                    'file_name': 'file1',
+                    'file_name': file1_name,
                     'combined_column_data': data_file1,
                     'status': status,
                     'description': description
                 })
                 results.append({
                     'common_column_value': common_value,
-                    'file_name': 'file2',
+                    'file_name': file2_name,
                     'combined_column_data': data_file2,
                     'status': status,
                     'description': description
@@ -186,7 +190,7 @@ def compare_results(request, comparison_id):
     return render(request, 'matching/compare_results.html', {
         'results': results,
         'comparison': comparison,
-        'combined_columns': combined_columns  # Pass combined column names to the template
+        'combined_columns': combined_columns,
     })
 
 

@@ -5,6 +5,7 @@ from django import template
 register = template.Library()
 
 @register.filter
-def get_value(dictionary, key):
+def get_item(dictionary, key):
     """Returns the value of a key in a dictionary, or an empty string if key doesn't exist."""
-    return dictionary.get(key, "")
+    return dictionary.get(key, '')
+

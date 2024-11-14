@@ -1,13 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
+from .storage import NumberedFileSystemStorage
 from .forms import LOCATION_CHOICES, PATIENT_TYPE_CHOICES
+
+numbered_storage = NumberedFileSystemStorage()
 
 # ExcelFile model
 class ExcelFile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     location = models.CharField(max_length=30, choices=LOCATION_CHOICES)
     patient_type = models.CharField(max_length=30, choices=PATIENT_TYPE_CHOICES)
-    file = models.FileField(upload_to='filestorage')
+    file = models.FileField(upload_to='filestorage',storage=numbered_storage)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
