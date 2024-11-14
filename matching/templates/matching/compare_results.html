@@ -1,48 +1,146 @@
 {% extends 'base.html' %}
-
+{% load custom_filters %}
+{% load static %}
 {% block title %}Comparison Results{% endblock %}
 
+{% block header %}Comparison Results{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h2 class="my-4">Comparison Results</h2>
 
-    <table class="table table-bordered table-striped">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">Common Column Value</th>
-                <th scope="col">File Name</th>
+<link rel="stylesheet" href="{% static 'css/comparison.css' %}">
 
-                <!-- Display combined column headers -->
-                {% for combined_column in combined_columns %}
-                    <th scope="col">{{ combined_column }}</th>
-                {% endfor %}
+<div class="comparison-container">
 
-                <th scope="col">Status</th>
-                <th scope="col">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for result in results %}
+    
+    <!-- Toggle Buttons for Different Views -->
+    <div class="view-toggle">
+        <button onclick="showCombinedView()">Combined Column View</button>
+        <button onclick="showSideBySideView()">Side-by-Side View</button>
+    </div>
+    
+    <!-- Combined Column View (Single Table) -->
+    <div id="combined-view" style="display: block;">
+        <h4>Combined Column View</h4>
+        <table class="comparison-table">
+            <thead>
                 <tr>
-                    <td>{{ result.common_column_value }}</td>
-                    <td>{{ result.file_name }}</td>
-
-                    <!-- Display each combined column data -->
-                    {% for value in result.combined_column_data.values %}
-                        <td>{{ value }}</td>
+                    <th>Common Column Value</th>
+                    <th>File Name</th>
+                    {% for combined_column in combined_columns %}
+                        <th>{{ combined_column }}</th>
                     {% endfor %}
+                    <th>Status</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results_combined_view %}
+                    <tr>
+                        <td>{{ result.common_column_value }}</td>
+                        <td>{{ result.file_name }}</td>
+                        {% for value in result.combined_column_data.values %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                        <td class="{% if result.status == 'Mismatch' %}text-danger{% else %}text-success{% endif %}">
+                            {{ result.status }}
+                        </td>
+                        <td>{{ result.description }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="{{ combined_columns|length|add:3 }}" class="text-center">No data found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-                    <td class="{% if result.status == 'Mismatch' %}text-danger{% else %}text-success{% endif %}">
-                        {{ result.status }}
-                    </td>
-                    <td>{{ result.description }}</td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">No comparison results found.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Side-by-Side View (Two Tables) -->
+    <div id="side-by-side-view" style="display: none;">
+        <h4>Side-by-Side View</h4>
+        <div class="row">
+            <div class="side-by-side-column">
+                <h4>Instance 1: {{ file1_name }}</h4>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Common Column Value</th>
+                            {% for column in file1_columns %}
+                                <th>{{ column }}</th>
+                            {% endfor %}
+                            <th>Status</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results_side_by_side %}
+                            <tr>
+                                <td>{{ result.common_column_value }}</td>
+                                {% for column in file1_columns %}
+                                    <td>{{ result.file1_data|get_item:column }}</td>
+                                {% endfor %}
+                                <td class="{% if result.status == 'Mismatch' %}text-danger{% else %}text-success{% endif %}">
+                                    {{ result.status }}
+                                </td>
+                                <td>{{ result.description }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="{{ file1_columns|length|add:3 }}" class="text-center">No data found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="side-by-side-column">
+                <h4>Instance 2: {{ file2_name }}</h4>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Common Column Value</th>
+                            {% for column in file2_columns %}
+                                <th>{{ column }}</th>
+                            {% endfor %}
+                            <th>Status</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results_side_by_side %}
+                            <tr>
+                                <td>{{ result.common_column_value }}</td>
+                                {% for column in file2_columns %}
+                                    <td>{{ result.file2_data|get_item:column }}</td>
+                                {% endfor %}
+                                <td class="{% if result.status == 'Mismatch' %}text-danger{% else %}text-success{% endif %}">
+                                    {{ result.status }}
+                                </td>
+                                <td>{{ result.description }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="{{ file2_columns|length|add:3 }}" class="text-center">No data found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
 </div>
+
+<script>
+function showCombinedView() {
+    document.getElementById('combined-view').style.display = 'block';
+    document.getElementById('side-by-side-view').style.display = 'none';
+}
+
+function showSideBySideView() {
+    document.getElementById('combined-view').style.display = 'none';
+    document.getElementById('side-by-side-view').style.display = 'block';
+}
+</script>
+
 {% endblock %}

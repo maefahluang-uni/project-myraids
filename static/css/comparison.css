@@ -1,0 +1,111 @@
+/* comparison.css */
+
+/* Main layout container */
+.comparison-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Headings */
+h2, h4 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Flex container for side-by-side tables */
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Column styling for each table container */
+.side-by-side-column {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* Table styling */
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.comparison-table th,
+.comparison-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+/* Header styling */
+.comparison-table th {
+    background-color: #343a40;
+    color: white;
+}
+
+/* Alternating row colors for readability */
+.comparison-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Status colors */
+.text-danger {
+    color: #dc3545;
+}
+
+.text-success {
+    color: #28a745;
+}
+
+/* Centered empty row */
+.text-center {
+    text-align: center;
+}
+
+/* Toggle button container styling */
+.view-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Button styling */
+.view-toggle button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.view-toggle button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+    }
+    
+    .side-by-side-column {
+        width: 100%;
+    }
+
+    .view-toggle {
+        flex-direction: column;
+    }
+
+    .view-toggle button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}

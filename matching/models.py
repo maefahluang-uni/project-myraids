@@ -30,7 +30,9 @@ class ComparisonResult(models.Model):
     comparison = models.ForeignKey(Comparison, related_name='results', on_delete=models.CASCADE)
     common_column_value = models.CharField(max_length=255)
     data_file1 = models.JSONField()  # Stores selected column data from File 1 as JSON
-    data_file2 = models.JSONField()  # Stores selected column data from File 2 as JSON
+    data_file2 = models.JSONField() # Stores selected column data from File 2 as JSON
+    side_by_side_data_file1 = models.JSONField()  
+    side_by_side_data_file2 = models.JSONField()
     status = models.CharField(max_length=50, choices=[('Match', 'Match'), ('Mismatch', 'Mismatch')])
     description = models.TextField()
 

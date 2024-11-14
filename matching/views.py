@@ -137,6 +137,11 @@ def pair_columns(request):
 
     return render(request, 'matching/pair_columns.html', {'form': form})
 
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Comparison
+from .utils import load_columns_from_file
+
 @login_required
 def compare_results(request, comparison_id):
     """View to display the results of the comparison."""
@@ -144,53 +149,71 @@ def compare_results(request, comparison_id):
     column_selections = comparison.column_selections.all()
 
     # Load dataframes for comparison
-    file1_id = comparison.file1.id
-    file2_id = comparison.file2.id
+    file1_id, file2_id = comparison.file1.id, comparison.file2.id
     _, df1 = load_columns_from_file(file1_id)
     _, df2 = load_columns_from_file(file2_id)
 
-    # Retrieve the selected instance names
-    file1_name = str(comparison.file1)
-    file2_name = str(comparison.file2)
+    # Retrieve instance names and common column
+    file1_name, file2_name = str(comparison.file1), str(comparison.file2)
+    common_column = comparison.common_column
 
-    # Create combined column names for each pairing
-    combined_columns = [
-        f"{sel.column_file1}_{sel.column_file2}" for sel in column_selections
-    ]
+    # Generate column mappings for file1 and file2
+    file1_columns = [sel.column_file1 for sel in column_selections]
+    file2_columns = [sel.column_file2 for sel in column_selections]
+    combined_columns = [f"{sel.column_file1}_{sel.column_file2}" for sel in column_selections]
 
-    # Perform comparison based on common column and mapped columns
-    results = []
+    # Prepare data for the two views
+    results_combined_view = []
+    results_side_by_side = []
+
     for _, row1 in df1.iterrows():
         for _, row2 in df2.iterrows():
-            if row1[comparison.common_column] == row2[comparison.common_column]:
-                common_value = row1[comparison.common_column]
-
-                # Data for file1 and file2 separately using combined column names
+            if row1[common_column] == row2[common_column]:
+                common_value = row1[common_column]
+                
+                # Data for combined view
                 data_file1 = {f"{sel.column_file1}_{sel.column_file2}": row1[sel.column_file1] for sel in column_selections}
                 data_file2 = {f"{sel.column_file1}_{sel.column_file2}": row2[sel.column_file2] for sel in column_selections}
-                status = 'Match' if data_file1 == data_file2 else 'Mismatch'
-                description = 'All data matches' if status == 'Match' else 'Data differs'
+                combined_status = 'Match' if data_file1 == data_file2 else 'Mismatch'
+                description = 'All data matches' if combined_status == 'Match' else 'Data differs'
 
-                # Append separate results for file1 and file2 under the same common column value
-                results.append({
+                results_combined_view.append({
                     'common_column_value': common_value,
                     'file_name': file1_name,
                     'combined_column_data': data_file1,
-                    'status': status,
+                    'status': combined_status,
                     'description': description
                 })
-                results.append({
+                results_combined_view.append({
                     'common_column_value': common_value,
                     'file_name': file2_name,
                     'combined_column_data': data_file2,
-                    'status': status,
+                    'status': combined_status,
+                    'description': description
+                })
+
+                # Data for side-by-side view
+                side_by_side_data_file1 = {col: row1[col] for col in file1_columns}
+                side_by_side_data_file2 = {col: row2[col] for col in file2_columns}
+                side_by_side_status = 'Match' if side_by_side_data_file1 == side_by_side_data_file2 else 'Mismatch'
+                
+                results_side_by_side.append({
+                    'common_column_value': common_value,
+                    'file1_data': side_by_side_data_file1,
+                    'file2_data': side_by_side_data_file2,
+                    'status': side_by_side_status,
                     'description': description
                 })
 
     return render(request, 'matching/compare_results.html', {
-        'results': results,
-        'comparison': comparison,
+        'results_combined_view': results_combined_view,
+        'results_side_by_side': results_side_by_side,
+        'file1_name': file1_name,
+        'file2_name': file2_name,
+        'file1_columns': file1_columns,
+        'file2_columns': file2_columns,
         'combined_columns': combined_columns,
     })
+
 
 
