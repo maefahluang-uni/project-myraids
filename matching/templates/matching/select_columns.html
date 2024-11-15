@@ -1,40 +1,76 @@
-<!-- matching/templates/matching/select_columns.html -->
 {% extends 'base.html' %}
 
-{% block title %}Select Columns for Matching{% endblock %}
+{% load static %}  <!-- Load static files in Django -->
+
+{% block title %}Select Columns{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h1 class="text-center mb-4">Select Columns for Matching</h1>
-    <form method="post">
+<div class="container">
+    <h2>Select Columns for Comparison</h2>
+
+    {% if form.errors %}
+        <p class="error-message">Please correct the errors below.</p>
+    {% endif %}
+
+    <form method="post" action="{% url 'matching:column_selection' %}" id="column-selection-form">
         {% csrf_token %}
-        <div class="form-group mb-4">
-            <label for="debtor_main_column" class="form-label">Select Main Column for Matching (Debtor):</label>
-            <select name="debtor_main_column" id="debtor_main_column" class="form-select">
-                {% for value, label in form.debtor_main_column.field.choices %}
-                    <option value="{{ value }}" {% if form.debtor_main_column.value == value %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
+
+        <!-- Flex container for form columns -->
+        <div class="form-columns">
+            <div id="file1-columns" class="column">
+                <h3>Select Columns from File 1:</h3>
+                {{ form.columns_file1 }}
+            </div>
+
+            <div id="file2-columns" class="column">
+                <h3>Select Columns from File 2:</h3>
+                {{ form.columns_file2 }}
+            </div>
         </div>
-        <div class="form-group mb-4">
-            <label for="claimer_main_column" class="form-label">Select Main Column for Matching (Claimer):</label>
-            <select name="claimer_main_column" id="claimer_main_column" class="form-select">
-                {% for value, label in form.claimer_main_column.field.choices %}
-                    <option value="{{ value }}" {% if form.claimer_main_column.value == value %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
+
+        <!-- Common column selection -->
+        <div class="common-column">
+            <h3>Select Common Column:</h3>
+            {{ form.common_column }}
         </div>
-        <div class="form-group mb-4">
-            <label for="debtor_selected_columns" class="form-label">Select Columns for Matching (Debtor):</label>
-            {{ form.debtor_selected_columns }}
-        </div>
-        <div class="form-group mb-4">
-            <label for="claimer_selected_columns" class="form-label">Select Columns for Matching (Claimer):</label>
-            {{ form.claimer_selected_columns }}
-        </div>
-        <div class="text-center mt-5">
-            <button type="submit" class="btn btn-primary btn-lg w-100">Perform Matching</button>
-        </div>
+
+        <p id="column-count-warning" class="warning-message" style="display: none;">
+            Please select an equal number of columns from both files.
+        </p>
+
+        <button type="button" onclick="submitColumnSelection()">Submit</button>
     </form>
 </div>
+
+<!-- Link to external CSS file -->
+<link rel="stylesheet" type="text/css" href="{% static 'matching/select_columns.css' %}">
+
+<script>
+    // Add event listeners to checkboxes to validate column count dynamically
+    document.querySelectorAll('[name="columns_file1"]').forEach((checkbox) => {
+        checkbox.addEventListener('change', validateColumnCount);
+    });
+
+    document.querySelectorAll('[name="columns_file2"]').forEach((checkbox) => {
+        checkbox.addEventListener('change', validateColumnCount);
+    });
+
+    function validateColumnCount() {
+        const selectedFile1 = document.querySelectorAll('[name="columns_file1"]:checked').length;
+        const selectedFile2 = document.querySelectorAll('[name="columns_file2"]:checked').length;
+
+        document.getElementById('column-count-warning').style.display = (selectedFile1 !== selectedFile2) ? 'block' : 'none';
+    }
+
+    function submitColumnSelection() {
+        const selectedFile1 = document.querySelectorAll('[name="columns_file1"]:checked').length;
+        const selectedFile2 = document.querySelectorAll('[name="columns_file2"]:checked').length;
+
+        if (selectedFile1 === selectedFile2) {
+            document.getElementById('column-selection-form').submit();
+        } else {
+            alert('Please select an equal number of columns.');
+        }
+    }
+</script>
 {% endblock %}

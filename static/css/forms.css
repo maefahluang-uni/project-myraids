@@ -1,0 +1,26 @@
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+}
+
+/* Styles for side-by-side checkboxes */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-group.col-md-6 {
+    flex: 1;
+}
+
+.form-group ul {
+    list-style: none;
+    padding: 0;
+}
+
+.form-group ul li {
+    margin-bottom: 5px;
+}

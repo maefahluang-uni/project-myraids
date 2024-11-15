@@ -1,22 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .forms import LOCATION_CHOICES, PATEINT_TYPE_CHOICES
+from .storage import NumberedFileSystemStorage
+from .forms import LOCATION_CHOICES, PATIENT_TYPE_CHOICES
 
+numbered_storage = NumberedFileSystemStorage()
 
+# ExcelFile model
 class ExcelFile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     location = models.CharField(max_length=30, choices=LOCATION_CHOICES)
-    patient_type = models.CharField(max_length=30, choices=PATEINT_TYPE_CHOICES)
-    file = models.FileField(upload_to='filestorage')
+    patient_type = models.CharField(max_length=30, choices=PATIENT_TYPE_CHOICES)
+    file = models.FileField(upload_to='filestorage',storage=numbered_storage)
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.file.name.split('/')[-1]}"
-    
+
+# Debtor model
 class Debtor(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    ExcelFile = models.ForeignKey(ExcelFile, on_delete=models.CASCADE)
+    excelfile = models.ForeignKey(ExcelFile, on_delete=models.CASCADE, related_name='debtors',null=True)  # Corrected ForeignKey
     No = models.CharField(max_length=50)
     VN = models.CharField(max_length=50)
     HN = models.CharField(max_length=50)
@@ -61,11 +64,16 @@ class Debtor(models.Model):
     cost = models.CharField(max_length=50)
     DoctorName = models.CharField(max_length=500)
     location = models.CharField(max_length=50, choices=LOCATION_CHOICES)
-    patient_type = models.CharField(max_length=50, choices=PATEINT_TYPE_CHOICES)
+    patient_type = models.CharField(max_length=50, choices=PATIENT_TYPE_CHOICES)
 
+    def __str__(self):
+        return f"{self.PatientName} ({self.HN})"
+
+
+# Claimer model
 class Claimer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    ExcelFile = models.ForeignKey(ExcelFile, on_delete=models.CASCADE)
+    excelfile = models.ForeignKey(ExcelFile, on_delete=models.CASCADE, related_name='claimers',null=True)  # Corrected ForeignKey
     VN = models.CharField(max_length=50)
     HN = models.CharField(max_length=50)
     Stat = models.CharField(max_length=50)
@@ -86,5 +94,7 @@ class Claimer(models.Model):
     importStaff = models.CharField(max_length=50)
     bill = models.CharField(max_length=50)
     location = models.CharField(max_length=50, choices=LOCATION_CHOICES)
-    patient_type = models.CharField(max_length=50, choices=PATEINT_TYPE_CHOICES)
+    patient_type = models.CharField(max_length=50, choices=PATIENT_TYPE_CHOICES)
 
+    def __str__(self):
+        return f"{self.VN} ({self.HN})"

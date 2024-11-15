@@ -1,0 +1,244 @@
+/* Reset and Body Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background-color: #F4FAFD;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Header */
+header {
+    background-color: #fff;
+    padding: 15px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+header .logo img {
+    height: 50px;
+}
+
+.menu {
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.menu:hover {
+    background-color: #bbdff5;
+}
+
+/* Sidebar Navigation */
+.nav {
+    background-color: #fff;
+    width: 200px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: -200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav ul {
+    width: 100%;
+    text-align: center;
+}
+
+.nav li {
+    padding: 10px 0;
+}
+
+.nav a, .logout-btn {
+    color: #333;
+    display: block;
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+    text-align: center;
+    font-weight: 600;
+}
+
+.nav a:hover, .logout-btn:hover {
+    background-color: #bbdff5;
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.logout-btn:hover {
+    color: #155724;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.dashboard-header h1 {
+    font-size: 2em;
+    color: #333;
+}
+
+/* Main Content Table Styling */
+.table-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+table th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Status Labels */
+.status-green {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-yellow {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-red {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Forms */
+form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+    display: block;
+    font-weight: bold;
+    color: #555;
+    margin-top: 10px;
+}
+
+form input[type="text"],
+form input[type="number"],
+form select,
+form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+form .btn-submit {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+form .btn-submit:hover {
+    background-color: #45a049;
+}
+
+.btn-back {
+    display: inline-block;
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #4CAF50;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-back:hover {
+    text-decoration: underline;
+}
+
+/* Messages */
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+/* Highlight mismatched rows with a light red background */
+.mismatch-row {
+    background-color: #f8d7da;
+}
+.text-danger {
+    color: #dc3545;
+}
+.text-success {
+    color: #28a745;
+}

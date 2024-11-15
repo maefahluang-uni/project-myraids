@@ -161,11 +161,6 @@
             background-color: #fff3cd;
             color: #856404;
         }
-
-        .status-red {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
     </style>
 </head>
 
@@ -211,6 +206,7 @@
             <li><a href="{% url 'matching:view_matching_history' %}">History Log</a></li>
             <li><a href="{% url 'matching:select_files' %}">Save File</a></li>
             <li><a href="{% url 'matching:create_matching_preset' %}">Create Matching Preset</a></li>
+            <li><a href="{% url 'matching:create_comparison' %}">compare file</a></li>
             <li>
                 <form method="POST" action="{% url 'matching:logout' %}">
                     {% csrf_token %}
@@ -232,11 +228,13 @@
             const nav = document.getElementById('navModel');
             const menuBtn = document.getElementById('menuBtn');
 
+            // Toggle nav menu without eval or unsafe string evaluation
             menuBtn.addEventListener('click', function (event) {
                 event.stopPropagation();
                 nav.style.left = nav.style.left === '0px' ? '-200px' : '0px';
             });
 
+            // Close nav when clicking outside
             window.addEventListener('click', function (event) {
                 if (!event.target.closest('.nav') && nav.style.left === '0px') {
                     nav.style.left = '-200px';

@@ -1,0 +1,16 @@
+<!-- matching/templates/matching/error.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Error{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <h2>Error</h2>
+    <p>{{ message }}</p>
+    <a href="{% url 'matching:home' %}" class="btn-back">Back to Home</a>
+</div>
+{% endblock %}
+
+<!-- Link to external CSS -->
+<link rel="stylesheet" href="{% static 'css/error.css' %}">

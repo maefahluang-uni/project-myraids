@@ -1,4 +1,3 @@
-<!-- matching/templates/home.html -->
 {% extends 'base.html' %}
 {% load static %}
 
@@ -9,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- <div class="dashboard-header">
     <h1>Dashboard</h1>
+<<<<<<< HEAD
 </div> -->
 <!-- <div class="p-container">
             <li><a href="{% url 'matching:select_files' %}">Select Files for Matching</a></li>
@@ -59,6 +59,31 @@
                 <p class="graph">Total Files Uploaded by Month</p>
             </div>
         </div>
+=======
+</div>
+
+<main>
+    <div class="actions">
+        <h2>Actions</h2>
+        <ul>
+            <li><a href="{% url 'matching:create_comparison' %}">Start New Comparison</a></li>
+        </ul>
+    </div>
+
+    <div class="comparisons">
+        <h2>Your Comparisons</h2>
+        <ul>
+            {% for comparison in comparisons %}
+                <li>
+                    <a href="{% url 'matching:compare_results' comparison.id %}">
+                        Comparison between {{ comparison.file1 }} and {{ comparison.file2 }} on "{{ comparison.common_column }}"
+                    </a> - Created at: {{ comparison.created_at|date:"Y-m-d H:i" }}
+                </li>
+            {% empty %}
+                <li>No comparisons found. Start a new comparison above.</li>
+            {% endfor %}
+        </ul>
+>>>>>>> Development
     </div>
 
     <div class="row3">

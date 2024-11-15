@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Error{% endblock %}
 
@@ -6,26 +7,9 @@
 <div class="error-container">
     <h1 class="error-title">Error</h1>
     <p class="error-message">{{ error_message|linebreaks }}</p>
+    <a href="{% url 'upload:upload_file' %}" class="btn-back">Back to Upload</a> <!-- Optional back button -->
 </div>
 {% endblock %}
 
-<style>
-    .error-container {
-        max-width: 600px;
-        margin: 50px auto;
-        padding: 20px;
-        border: 1px solid #f5c2c7;
-        background-color: #f8d7da;
-        border-radius: 5px;
-        text-align: center;
-    }
-    .error-title {
-        color: #721c24;
-        font-size: 2em;
-        margin-bottom: 15px;
-    }
-    .error-message {
-        color: #721c24;
-        font-size: 1.2em;
-    }
-</style>
+<!-- Link to external CSS -->
+<link rel="stylesheet" href="{% static 'css/error.css' %}">
