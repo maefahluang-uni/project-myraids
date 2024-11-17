@@ -224,7 +224,7 @@
             <li><a href="{% url 'matching:home' %}">Dashboard</a></li>
             <li><a href="{% url 'upload:upload_file' %}">Upload File</a></li>
             <li><a href="{% url 'matching:create_comparison' %}">Compare File</a></li>
-            <li><a href="{% url 'matching:view_matching_history' %}">Compare Results</a></li>
+            <li><a href="{% url 'matching:view_matching_history' %}">Compare History</a></li>
             <li>
                 <form method="POST" action="{% url 'matching:logout' %}">
                     {% csrf_token %}
