@@ -26,6 +26,7 @@ urlpatterns = [
     path('matching/',include('matching.urls', namespace='matching')),
     path('accounts/',include('login_signup.urls', namespace= 'authen')),
     path('', matching_views.home, name='home'),
+    path('upload/', include('upload.urls', namespace='upload')),
 ] + static(settings.STATIC_URL)
 
 if settings.DEBUG:

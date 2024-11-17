@@ -2,51 +2,53 @@
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import Comparison, ColumnSelection, ComparisonResult
 from .forms import FileSelectionForm, ColumnSelectionForm, ColumnPairingForm
 from .utils import load_columns_from_file, create_combined_column_names
+from upload.models import ExcelFile, Debtor, Claimer
+from .models import MatchingResult, MatchingPreset, MatchingHistory
 import pandas as pd
 from django.contrib import messages
 from django.contrib.auth.models import User
 from collections import Counter
 import datetime
 from django.db import models
-from django.shortcuts import render
-from .models import Debtor, Claimer, User, ExcelFile, MatchingResult, Comparison
+from django.http import HttpResponseForbidden
+from .models import ComparisonResult
+
 
 @login_required
 def home(request):
-    # Count unique ExcelFile records associated with debtors and claimers
-    total_debtors = Debtor.objects.values('ExcelFile').distinct().count()
-    total_claimers = Claimer.objects.values('ExcelFile').distinct().count()
+    # Use distinct to count unique ExcelFile records associated with debtors and claimers
+    total_debtors = Debtor.objects.values('excelfile').distinct().count()
+    total_claimers = Claimer.objects.values('excelfile').distinct().count()  # Changed to excelfile (lowercase)
     total_users = User.objects.count()
-    total_uploaded_files = ExcelFile.objects.count()
+    total_comparisons = Comparison.objects.count()
     total_matching_results = MatchingResult.objects.count()
 
-    # Filter comparisons for the logged-in user
-    comparisons = Comparison.objects.filter(user=request.user)
+    
 
-    # Group matching results by month and count them
     uploaded_files_by_month = (
         MatchingResult.objects
         .extra(select={'month': "EXTRACT(MONTH FROM created_at)"})
         .values('month')
         .annotate(count=models.Count('id'))
+        .order_by('month')
     )
     
     # Create a dictionary for month and count
     uploaded_files_by_month_dict = {entry['month']: entry['count'] for entry in uploaded_files_by_month}
 
-    # Combine context data from both views
+    
     context = {
         'total_debtors': total_debtors,
         'total_claimers': total_claimers,
         'total_users': total_users,
-        'total_uploaded_files': total_uploaded_files,
+        'total_comparisons': total_comparisons,
         'total_matching_results': total_matching_results,
         'uploaded_files_by_month': uploaded_files_by_month_dict,
-        'comparisons': comparisons,  # User-specific comparisons
     }
     return render(request, 'matching/home.html', context)
 
@@ -251,5 +253,30 @@ def compare_results(request, comparison_id):
         'combined_columns': combined_columns,
     })
 
+def view_matching_results(request):
+    # Fetch all saved matching results
+    matching_results = MatchingResult.objects.all()
+    return render(request, 'matching/view_results.html', {'matching_results': matching_results})
 
 
+def view_matching_history(request):
+    # Fetch all matching history records
+    matching_history = MatchingHistory.objects.all()
+    comparisons = Comparison.objects.filter(user=request.user)
+
+    context = {
+        'comparisons': comparisons,
+    }
+    return render(request, 'matching/view_history.html', context)
+
+@login_required
+def delete_result(request, result_id):
+    """View to delete a specific result."""
+    result = get_object_or_404(ComparisonResult, id=result_id)
+
+    if result.user != request.user:
+        return HttpResponseForbidden("You are not allowed to delete this item.")
+
+    result.delete()
+    messages.success(request, "Row deleted successfully.")
+    return redirect('matching:comparison_results')

@@ -1,33 +1,134 @@
 <!-- matching/templates/matching/view_history.html -->
 {% extends 'base.html' %}
 
-{% block title %}View Matching History{% endblock %}
-
 {% block content %}
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Quicksand:wght@300..700&display=swap">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Quicksand:wght@300..700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: "Inter", sans-serif;
+            box-sizing: border-box;
+            list-style: none;
+            text-decoration: none;
+        }
+
+        .table-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            max-width: 1200px;
+            max-height: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow-y: auto;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .results-table th {
+            background-color: #bbdff5;
+        }
+
+        .results-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            margin: 0 5px;
+            background-color: #bbdff5;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #000;
+        }
+
+        .pagination a:hover {
+            background-color: #80ceff;
+            color: #fff;
+        }
+
+        .pagination span {
+            padding: 8px 12px;
+            margin: 0 5px;
+        }
+    </style>
+</head>
 <main>
     <div class="dashboard-header">
-        <h1>View Matching History</h1>
+        <h1>Compare Results</h1>
     </div>
-    <div class="table-container">
-    <table class="results-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Timestamp</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for history in matching_history %}
-            <tr>
-                <td>{{ history.id }}</td>
-                <td>{{ history.timestamp }}</td>
-                <td>{{ history.description }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-container" style="overflow-x: auto;">
+        <table class="results-table" style="width: 100%; min-width: 700px;">
+            <thead>
+                <tr>
+                    <th>Debt File</th>
+                    <th>Claim File</th>
+                    <th>Download Compare File</th>
+                    <th>Created Timestamp</th>
+                    <th>User</th> <!-- Compare by which user -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for comparison in comparisons %}
+                <tr>
+                    <td>{{ comparison.file1 }}</td>
+                    <td>{{ comparison.file2 }}</td>
+                    <td>
+                        <a href="{% url 'matching:compare_results' comparison.id %}" class="btn btn-primary">
+                            View Compare File
+                        </a>
+                    </td>
+                    <td>{{ comparison.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ comparison.user.username }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No comparisons found. Start a new comparison above.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </div>
     </div>
 </main>
+
 {% endblock %}

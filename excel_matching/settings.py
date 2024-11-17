@@ -88,7 +88,7 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': 'postgressu',
         'HOST': 'localhost',   # or the appropriate host where your PostgreSQL instance is running
-        'PORT': '5433',        # or the appropriate port where your PostgreSQL instance is running
+        'PORT': '5435',        # or the appropriate port where your PostgreSQL instance is running
     }
 }
 

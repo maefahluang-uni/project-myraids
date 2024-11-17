@@ -11,24 +11,15 @@ app_name = 'matching'
 urlpatterns = [
     # Logout path
     path('logout/', LogoutView.as_view(), name='logout'),
-
-    # Home view to display matching sessions
     path('home/', views.home, name='home'),
-
-    # Step 1: File selection for new comparison
     path('create/', views.create_comparison, name='create_comparison'),
-
-    # AJAX: Load columns after file selection
     path('load-columns/', views.load_columns, name='load_columns'),
-
-    # Step 2: Column selection
     path('select-columns/', views.select_columns, name='column_selection'),
-
-    # Step 3 (Optional): Column pairing for mismatched names
     path('pair-columns/', views.pair_columns, name='pair_columns'),
-
-    # Step 4: View match results for comparison
     path('results/<int:comparison_id>/', views.compare_results, name='compare_results'),
+    path('view_history/', views.view_matching_history, name='view_matching_history'),
+    path('delete-result/<int:result_id>/', views.delete_result, name='delete_result'),
+    
 ]
 
 # Serve static files in development

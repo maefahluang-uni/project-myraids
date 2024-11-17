@@ -1,8 +1,10 @@
+#upload/views.py
 from django.shortcuts import render, redirect
 from .forms import FileUploadForm
 from upload.models import ExcelFile, Debtor, Claimer
 import pandas as pd
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 
 def check_file_type(uploaded_file):
@@ -142,29 +144,12 @@ def upload_file(request):
 
     else:
         form = FileUploadForm()
+    
+    files = ExcelFile.objects.order_by('-uploaded_at')
+    paginator = Paginator(files, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-    return render(request, 'upload.html', {'form': form})
-
-
-@login_required
-def history_view(request):
-    return render(request, "history.html")
-
-
-@login_required
-def match_view(request):
-    return render(request, "match.html")
+    return render(request, 'upload.html', {'form': form, 'files': page_obj})
 
 
-@login_required
-def dashboard_view(request):
-    return render(request, "dashboard.html")
-
-
-def login_view(request):
-    return render(request, 'login.html')
-
-
-@login_required
-def result_view(request):
-    return render(request, "result.html")

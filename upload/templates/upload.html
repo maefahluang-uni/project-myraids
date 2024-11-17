@@ -1,46 +1,251 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block title %}Claim and Debt Management{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Quicksand:wght@300..700&display=swap">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Quicksand:wght@300..700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: "Inter", sans-serif;
+            box-sizing: border-box;
+            list-style: none;
+            text-decoration: none;
+        }
+
+        .table-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            max-width: 1200px;
+            max-height: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow-y: auto;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+        }
 
 
+        /* Label styling */
+        .form-label1 {
+            margin-left: 10px;
+            margin-top: 15px;
+        }
+
+        /* Styling for the select fields */
+        .form-select-debt {
+            margin-left: 20px;
+            width: auto;
+            height: auto;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #bbdff5;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-label2 {
+            margin-left: 20px;
+            margin-top: 15px;
+        }
+
+        .form-select-claim {
+            margin-left: 20px;
+            width: auto;
+            height: auto;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #bbdff5;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Submit button styling */
+        .btn-primary {
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-left: 20px;
+            background-color: #bbdff5;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Hover effect for submit button */
+        .btn-primary:hover {
+            background-color: #80ceff;
+            color: #fff;
+        }
+
+        /* Styling for the upload button */
+        #uploadButton,
+        #compareButton {
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            background-color: #bbdff5;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin: 10px;
+            /* Adjust spacing between buttons */
+        }
+
+        #uploadButton:hover,
+        #compareButton:hover {
+            background-color: #80ceff;
+            color: #fff;
+        }
+
+        .popup-card {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            /* Hidden by default */
+        }
+
+        .popup-content {
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            /* Card background color */
+            padding: 20px;
+            border-radius: 5px;
+            width: 500px;
+            /* Adjust width as needed */
+            height: auto;
+            /* You can set a fixed height if needed */
+            text-align: center;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 36px;
+            cursor: pointer;
+            color: #000;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .choose-file {
+            margin-bottom: 20px;
+        }
+
+        .file-location {
+            margin-bottom: 20px;
+        }
+
+        .file-type {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            background-color: #bbdff5;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button a {
+            color: #000;
+        }
+
+        button:hover {
+            background-color: #80ceff;
+            color: #fff;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .results-table th {
+            background-color: #bbdff5;
+        }
+
+        .results-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            margin: 0 5px;
+            background-color: #bbdff5;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #000;
+        }
+
+        .pagination a:hover {
+            background-color: #80ceff;
+            color: #fff;
+        }
+
+        .pagination span {
+            padding: 8px 12px;
+            margin: 0 5px;
+        }
+    </style>
+</head>
 <main>
     <div class="dashboard-header">
-        <h1>Outpatient</h1>
+        <h1>Upload File</h1>
     </div>
-    
-    <div class="table-container">
-        <!-- Upload button -->
-        <button id="uploadButton" class="openBtn">Upload</button>
-        <form method="post" class="form-row">
-            {% csrf_token %}
-            <label for="debtor_file" class="form-label1">Select Debtor File:</label>
-            <select name="debtor_file" id="debtor_file" class="form-select-debt form-select-lg" style="height: 3.5rem;">
-                {% if debtor_files %}
-                    {% for file in debtor_files %}
-                        <option value="{{ file.id }}">{{ file.file.name }}</option>
-                    {% endfor %}
-                {% else %}
-                    <option value="">No Debtor Files Available</option>
-                {% endif %}
-            </select>
-                <label for="claimer_file" class="form-label2">Select Claimer File:</label>
-                    <select name="claimer_file" id="claimer_file" class="form-select-claim form-select-lg" style="height: 3.5rem;">
-                        {% if claimer_files %}
-                            {% for file in claimer_files %}
-                                <option value="{{ file.id }}">{{ file.file.name }}</option>
-                            {% endfor %}
-                        {% else %}
-                            <option value="">No Claimer Files Available</option>
-                        {% endif %}
-                    </select>
-            <div class="text-center mt-5">
-                <button type="submit" class="btn btn-primary btn-lg w-100">Proceed</button>
-            </div>
-        </form>
-        
+
+    <div class="table-container" style="overflow-x: auto;">
+        <div class="button-container">
+            <button id="uploadButton" class="openBtn">Upload</button>
+            <button id="compareButton">
+                <a href="{% url 'matching:create_comparison' %}">See Compare File</a>
+            </button>
+        </div>
+
         <!-- Upload Pop-up Card -->
         <div id="popupCard" class="popup-card" style="display: none;">
             <div class="popup-content">
@@ -68,52 +273,47 @@
                 </form>
             </div>
         </div>
-        <table border="1" class="data-table">
+
+        <table class="results-table" style="width: 100%; min-width: 700px;">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Type</th> <!-- To differentiate between Debtor and Claimer -->
-                    <th>No</th>
-                    <th>VN</th>
-                    <th>HN</th>
-                    <th>CID</th>
-                    <th>Patient Name</th>
-                    <th>Sex</th>
-                    <th>Age</th>
-                    <th>National</th>
-                    <th>Vstdate</th>
-                    <th>Vsttime</th>
-                    <th>Doctor Name</th>
-                    <!-- Add more columns as needed -->
+                    <th>File Name</th>
+                    <th>Location</th>
+                    <th>Patient Type</th>
+                    <th>Upload Timestamp</th>
+                    <th>User</th>
                 </tr>
             </thead>
             <tbody>
-                {% for data in file_data %}
+                {% for file in files %}
                 <tr>
-                    <td>{{ forloop.counter }}</td> <!-- Use loop counter for ID -->
-                    <td>{% if data.user %}Debtor{% else %}Claimer{% endif %}</td> <!-- Type identifier -->
-                    <td>{{ data.No }}</td>
-                    <td>{{ data.VN }}</td>
-                    <td>{{ data.HN }}</td>
-                    <td>{{ data.CID }}</td>
-                    <td>{{ data.PatientName }}</td>
-                    <td>{{ data.sex }}</td>
-                    <td>{{ data.age }}</td>
-                    <td>{{ data.National }}</td>
-                    <td>{{ data.vstdate }}</td>
-                    <td>{{ data.vsttime }}</td>
-                    <td>{{ data.DoctorName }}</td>
-                    <!-- Add more columns as needed -->
+                    <td>{{ file.file.name|default:"N/A" }}</td>
+                    <td>{{ file.get_location_display }}</td>
+                    <td>{{ file.get_patient_type_display }}</td>
+                    <td>{{ file.uploaded_at }}</td>
+                    <td>{{ file.user.username }}</td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="13">No data available.</td> <!-- Adjust based on the number of columns -->
+                    <td colspan="5">No files found.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </div>
     </div>
+
 </main>
 
 <script>

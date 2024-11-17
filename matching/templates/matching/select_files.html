@@ -39,6 +39,13 @@
                     <button type="submit" class="btn btn-primary btn-lg w-100">Proceed to Column Selection</button>
                 </div>
             </form>
+            <form method="post" action="{% url 'matching:create_comparison' %}">
+                {% csrf_token %}
+                
+                {{ form.as_p }}  <!-- Render the form fields directly from the FileSelectionForm -->
+        
+                <button type="submit">Next: Select Columns</button>
+            </form>
         </div>
     </div>
     <div class="container">

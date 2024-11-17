@@ -1,0 +1,19 @@
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.results-table th, .results-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.results-table th {
+    background-color: #bbdff5;
+}
+
+.results-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}

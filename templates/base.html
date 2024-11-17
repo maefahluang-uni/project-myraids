@@ -9,7 +9,6 @@
     <title>{% block title %}Claim and Debt Management{% endblock %}</title>
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Quicksand:wght@300..700&display=swap">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         * {
             margin: 0;
@@ -128,7 +127,11 @@
         }
 
         .table-container {
-            max-width: 1000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 1200px;
+            max-height: 700px;
             margin: 20px auto;
             padding: 20px;
             background-color: #ffffff;
@@ -160,6 +163,24 @@
         .status-yellow {
             background-color: #fff3cd;
             color: #856404;
+        }
+
+        .status-red {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            background-color: #bbdff5;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #80ceff;
+            color: #fff;
         }
     </style>
 </head>
@@ -201,12 +222,9 @@
         </div>
         <ul>
             <li><a href="{% url 'matching:home' %}">Dashboard</a></li>
-            <li><a href="{% url 'upload:upload_file' %}">Outpatient</a></li>
-            <li><a href="{% url 'upload:upload_file' %}">Inpatient</a></li>
-            <li><a href="{% url 'matching:view_matching_history' %}">History Log</a></li>
-            <li><a href="{% url 'matching:select_files' %}">Save File</a></li>
-            <li><a href="{% url 'matching:create_matching_preset' %}">Create Matching Preset</a></li>
-            <li><a href="{% url 'matching:create_comparison' %}">compare file</a></li>
+            <li><a href="{% url 'upload:upload_file' %}">Upload File</a></li>
+            <li><a href="{% url 'matching:create_comparison' %}">Compare File</a></li>
+            <li><a href="{% url 'matching:view_matching_history' %}">Compare Results</a></li>
             <li>
                 <form method="POST" action="{% url 'matching:logout' %}">
                     {% csrf_token %}
@@ -215,13 +233,13 @@
             </li>
         </ul>
     </nav>
-<br>
-<main>
-    {% block content %}
-    <!-- Content will be provided by child templates -->
-    {% endblock %}
-</main>
-    
+    <br>
+    <main>
+        {% block content %}
+        <!-- Content will be provided by child templates -->
+        {% endblock %}
+    </main>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

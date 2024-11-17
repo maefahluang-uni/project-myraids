@@ -1,6 +1,5 @@
+#upload/forms.py
 from django import forms
-
-
 
 LOCATION_CHOICES = [
         ('debtor','Debtor'),
@@ -17,3 +16,4 @@ class FileUploadForm(forms.Form):
     location = forms.ChoiceField(choices=LOCATION_CHOICES, widget=forms.RadioSelect)
     patient_type = forms.ChoiceField(choices=PATIENT_TYPE_CHOICES, widget=forms.RadioSelect)
 
+    

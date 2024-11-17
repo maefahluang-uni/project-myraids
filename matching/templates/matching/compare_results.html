@@ -1,146 +1,380 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
-{% load static %}
-{% block title %}Comparison Results{% endblock %}
-
-{% block header %}Comparison Results{% endblock %}
 
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/comparison.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Quicksand:wght@300..700&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: "Inter", sans-serif;
+            box-sizing: border-box;
+            list-style: none;
+            text-decoration: none;
+        }
 
-<div class="comparison-container">
+        .table-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            max-width: 1200px;
+            max-height: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow-y: auto;
+        }
 
-    
-    <!-- Toggle Buttons for Different Views -->
-    <div class="view-toggle">
-        <button onclick="showCombinedView()">Combined Column View</button>
-        <button onclick="showSideBySideView()">Side-by-Side View</button>
+        /* Main layout container */
+        .comparison-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0;
+            width: 100%;
+        }
+
+        /* Headings */
+        p {
+            color: black;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Flex container for side-by-side tables */
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        /* Column styling for each table container */
+        .side-by-side-column {
+            flex: 1;
+            min-width: 300px;
+            overflow-x: auto;
+        }
+
+        .side-by-side-column p {
+            position: sticky;
+        }
+
+        .combined-column-container {
+            overflow-x: auto;
+            /* Added for horizontal scrolling */
+        }
+
+        /* Table styling */
+        .comparison-table {
+            width: auto;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            table-layout: fixed;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        /* Header styling */
+        .comparison-table th {
+            background-color: #bbdff5;
+            color: black;
+        }
+
+        /* Alternating row colors for readability */
+        .comparison-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Status colors */
+        .text-danger {
+            color: #dc3545;
+        }
+
+        .text-success {
+            color: #28a745;
+        }
+
+        /* Centered empty row */
+        .text-center {
+            text-align: center;
+        }
+
+        /* Toggle button container styling */
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        /* Button styling */
+        .view-toggle button {
+            background-color: #bbdff5;
+            color: black;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: auto;
+        }
+
+        .view-toggle button:hover {
+            background-color: #80ceff;
+        }
+
+        /* Horizontal scrolling for tables */
+        .comparison-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            margin: 0 5px;
+            background-color: #bbdff5;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #000;
+        }
+
+        .pagination a:hover {
+            background-color: #80ceff;
+            color: #fff;
+        }
+
+        .pagination span {
+            padding: 8px 12px;
+            margin: 0 5px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .row {
+                flex-direction: column;
+            }
+
+            .side-by-side-column {
+                width: 100%;
+            }
+
+            .view-toggle {
+                flex-direction: column;
+            }
+
+            .view-toggle button {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+
+<main>
+    <div class="dashboard-header">
+        <h1>Compare Results</h1>
     </div>
+    <div class="table-container">
+        <div class="comparison-container">
 
-    <!-- Combined Column View (Single Table) -->
-    <div id="combined-view" style="display: block;">
-        <h4>Combined Column View</h4>
-        <table class="comparison-table">
-            <thead>
-                <tr>
-                    <th>Common Column Value</th>
-                    <th>File Name</th>
-                    {% for combined_column in combined_columns %}
-                        <th>{{ combined_column }}</th>
-                    {% endfor %}
-                    <th>Status</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for result in results_combined_view %}
-                    <tr>
-                        <td>{{ result.common_column_value }}</td>
-                        <td>{{ result.file_name }}</td>
-                        {% for value in result.combined_column_data.values %}
-                            <td>{{ value }}</td>
-                        {% endfor %}
-                        <td class="{% if result.status == 'Mismatch' %}text-danger{% else %}text-success{% endif %}">
-                            {{ result.status }}
-                        </td>
-                        <td>{{ result.description }}</td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="{{ combined_columns|length|add:3 }}" class="text-center">No data found.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Side-by-Side View (Two Tables) -->
-    <div id="side-by-side-view" style="display: none;">
-        <h4>Side-by-Side View</h4>
-        <div class="row">
-            <div class="side-by-side-column">
-                <h4>File 1: {{ file1_name }}</h4>
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Common Column Value</th>
-                            {% for column in file1_columns %}
-                                <th>{{ column }}</th>
-                            {% endfor %}
-                            <th>Status</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for result in results_side_by_side %}
-                            <tr>
-                                <td>{{ result.common_column_value }}</td>
-                                {% for column in file1_columns %}
-                                    <td>{{ result.file1_data|get_item:column }}</td>
-                                {% endfor %}
-                                <td class="{% if result.status == 'Mismatch' %}text-danger{% else %}text-success{% endif %}">
-                                    {{ result.status }}
-                                </td>
-                                <td>{{ result.description }}</td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="{{ file1_columns|length|add:3 }}" class="text-center">No data found.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <!-- Toggle Buttons for Different Views -->
+            <div class="view-toggle">
+                <button class="btn-toggle" onclick="showCombinedView()">Combined Column View</button>
+                <button class="btn-toggle" onclick="showSideBySideView()">Side-by-Side View</button>
             </div>
-            <div class="side-by-side-column">
-                <h4>File 2: {{ file2_name }}</h4>
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Common Column Value</th>
-                            {% for column in file2_columns %}
-                                <th>{{ column }}</th>
-                            {% endfor %}
-                            <th>Status</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for result in results_side_by_side %}
+
+            <!-- Combined Column View (Single Table) -->
+            <div id="combined-view" style="display: block;">
+                <p>Combined Column View</p>
+                <div class="combined-column-container">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Common Column Value</th>
+                                <th>File Name</th>
+                                {% for combined_column in combined_columns %}
+                                <th>{{ combined_column }}</th>
+                                {% endfor %}
+                                <th>Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results_combined_view %}
                             <tr>
                                 <td>{{ result.common_column_value }}</td>
-                                {% for column in file2_columns %}
-                                    <td>{{ result.file2_data|get_item:column }}</td>
+                                <td>{{ result.file_name }}</td>
+                                {% for value in result.combined_column_data.values %}
+                                <td>{{ value }}</td>
                                 {% endfor %}
-                                <td class="{% if result.status == 'Mismatch' %}text-danger{% else %}text-success{% endif %}">
+                                <td
+                                    class="{% if result.status == 'Mismatch' %}text-danger{% else %}text-success{% endif %}">
                                     {{ result.status }}
                                 </td>
                                 <td>{{ result.description }}</td>
                             </tr>
-                        {% empty %}
+                            {% empty %}
                             <tr>
-                                <td colspan="{{ file2_columns|length|add:3 }}" class="text-center">No data found.</td>
+                                <td colspan="{{ combined_columns|length|add:3 }}" class="text-center">No data found.
+                                </td>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    {% endif %}
+                    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Side-by-Side View (Two Tables) -->
+            <div id="side-by-side-view" style="display: none;">
+                <p>Side-by-Side View</p>
+                <div class="row">
+                    <div class="side-by-side-column">
+                        <p>File 1: {{ file1_name }}</p>
+                        <div class="side-by-side-column">
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Common Column Value</th>
+                                        {% for column in file1_columns %}
+                                        <th>{{ column }}</th>
+                                        {% endfor %}
+                                        <th>Status</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in results_side_by_side %}
+                                    <tr>
+                                        <td>{{ result.common_column_value }}</td>
+                                        {% for column in file1_columns %}
+                                        <td>{{ result.file1_data|get_item:column }}</td>
+                                        {% endfor %}
+                                        <td
+                                            class="{% if result.status == 'Mismatch' %}text-danger{% else %}text-success{% endif %}">
+                                            {{ result.status }}
+                                        </td>
+                                        <td>{{ result.description }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="{{ file1_columns|length|add:3 }}" class="text-center">No data
+                                            found.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination">
+                            {% if page_obj.has_previous %}
+                            <a href="?page=1">&laquo; First</a>
+                            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            {% endif %}
+                            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                            {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="side-by-side-column">
+                        <p>File 2: {{ file2_name }}</p>
+                        <div class="side-by-side-column">
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Common Column Value</th>
+                                        {% for column in file2_columns %}
+                                        <th>{{ column }}</th>
+                                        {% endfor %}
+                                        <th>Status</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in results_side_by_side %}
+                                    <tr>
+                                        <td>{{ result.common_column_value }}</td>
+                                        {% for column in file2_columns %}
+                                        <td>{{ result.file2_data|get_item:column }}</td>
+                                        {% endfor %}
+                                        <td
+                                            class="{% if result.status == 'Mismatch' %}text-danger{% else %}text-success{% endif %}">
+                                            {{ result.status }}
+                                        </td>
+                                        <td>{{ result.description }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="{{ file2_columns|length|add:3 }}" class="text-center">No data
+                                            found.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination">
+                            {% if page_obj.has_previous %}
+                            <a href="?page=1">&laquo; First</a>
+                            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            {% endif %}
+                            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                            {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</main>
 
-
-</div>
 
 <script>
-function showCombinedView() {
-    document.getElementById('combined-view').style.display = 'block';
-    document.getElementById('side-by-side-view').style.display = 'none';
-}
+    function showCombinedView() {
+        document.getElementById('combined-view').style.display = 'block';
+        document.getElementById('side-by-side-view').style.display = 'none';
+    }
 
-function showSideBySideView() {
-    document.getElementById('combined-view').style.display = 'none';
-    document.getElementById('side-by-side-view').style.display = 'block';
-}
+    function showSideBySideView() {
+        document.getElementById('combined-view').style.display = 'none';
+        document.getElementById('side-by-side-view').style.display = 'block';
+    }
 </script>
 
 {% endblock %}

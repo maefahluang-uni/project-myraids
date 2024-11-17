@@ -6,14 +6,7 @@
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- <div class="dashboard-header">
-    <h1>Dashboard</h1>
-<<<<<<< HEAD
-</div> -->
-<!-- <div class="p-container">
-            <li><a href="{% url 'matching:select_files' %}">Select Files for Matching</a></li>
-            <li><a href="{% url 'matching:view_results' %}">View Matching Results</a></li>
-        </div> -->
+
 <div class="dashboard">
     <div class="row">
         <div class="column">
@@ -39,67 +32,42 @@
 
         <div class="column">
             <div class="card-file">
-                <p class="num">{{ total_uploaded_files }}</p>
-                <p>Total Files Uploaded</p>
+                <p class="num">{{ total_comparisons }}</p>
+                <p>Total Compare Files</p>
             </div>
-        </div>
+        </div>        
     </div>
 
     <div class="row2">
         <div class="column2">
             <div class="card-r21">
+                <p>Total Debtor Files vs. Total Claimer Files</p>
                 <canvas id="debtorClaimerChart"></canvas>
-                <p class="graph">Total Debtor Files vs. Total Claimer Files</p>
             </div>
         </div>
 
         <div class="column2">
             <div class="card-r22">
+                <p>Total Files Uploaded by Month</p>
                 <canvas id="uploadedFilesChart"></canvas>
-                <p class="graph">Total Files Uploaded by Month</p>
             </div>
         </div>
-=======
-</div>
-
-<main>
-    <div class="actions">
-        <h2>Actions</h2>
-        <ul>
-            <li><a href="{% url 'matching:create_comparison' %}">Start New Comparison</a></li>
-        </ul>
-    </div>
-
-    <div class="comparisons">
-        <h2>Your Comparisons</h2>
-        <ul>
-            {% for comparison in comparisons %}
-                <li>
-                    <a href="{% url 'matching:compare_results' comparison.id %}">
-                        Comparison between {{ comparison.file1 }} and {{ comparison.file2 }} on "{{ comparison.common_column }}"
-                    </a> - Created at: {{ comparison.created_at|date:"Y-m-d H:i" }}
-                </li>
-            {% empty %}
-                <li>No comparisons found. Start a new comparison above.</li>
-            {% endfor %}
-        </ul>
->>>>>>> Development
     </div>
 
     <div class="row3">
         <div class="column3">
             <div class="card-r31">
-                <h3>Card 1</h3>
-                <p class="graph">Some text</p>
+                <p>Total Comparisons by Month</p>
+                <canvas id="monthlyComparisonChart"></canvas>
             </div>
         </div>
 
-        <div class="column3">
+        <!-- <div class="column3">
             <div class="card-r32">
-                <h3>Card 2</h3>
-                <p class="graph">Some text</p>
+                <p>Most Active Users</p>
+                <canvas id="activeUsersChart"></canvas>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 <script type="application/json" id="debtorClaimerData">
@@ -170,4 +138,40 @@
         });
     });
 </script>
+<script type="application/json" id="uploadedFilesData">
+    {{ uploaded_files_by_month|json_script }}
+</script>
+
+<script>
+    // Prepare data for the chart
+    const uploadedFilesByMonth = JSON.parse(document.getElementById('uploadedFilesData').textContent);
+    const months = Array.from({ length: 12 }, (_, i) => i + 1); // Months 1-12
+    const counts = months.map(month => uploadedFilesByMonth[month] || 0); // Use 0 for months with no data
+
+    // Create the chart
+    const ctx = document.getElementById('monthlyComparisonChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months.map(month => `Month ${month}`),
+            datasets: [{
+                label: 'Uploaded Files by Month',
+                data: counts,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    
+</script>
+
 {% endblock %}
